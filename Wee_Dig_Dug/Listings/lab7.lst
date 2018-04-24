@@ -1,0 +1,3456 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000                 AREA             interrupts, CODE, READWRITE
+    2 00000000                 EXPORT           lab7
+    3 00000000                 EXPORT           FIQ_Handler
+    4 00000000                 IMPORT           read_character
+    5 00000000                 IMPORT           output_character
+    6 00000000                 IMPORT           output_string
+    7 00000000                 IMPORT           invalidInput
+    8 00000000                 IMPORT           display_digit_on_7_seg
+    9 00000000                 IMPORT           IO0CLR
+   10 00000000                 IMPORT           board
+   11 00000000                 IMPORT           random_position
+   12 00000000                 IMPORT           random_dir
+   13 00000000                 IMPORT           move_up
+   14 00000000                 IMPORT           move_down
+   15 00000000                 IMPORT           move_left
+   16 00000000                 IMPORT           move_right
+   17 00000000         
+   18 00000000                 EXPORT           current_dir
+   19 00000000                 EXPORT           current_char
+   20 00000000                 EXPORT           current_pose
+   21 00000000                 EXPORT           point
+   22 00000000         
+   23 00000000                 IMPORT           initial_player
+   24 00000000                 IMPORT           Illuminate_RGB_LED
+   25 00000000                 IMPORT           Period_SET
+   26 00000000                 IMPORT           illuminateLiveLEDs
+   27 00000000                 IMPORT           new_board
+   28 00000000                 IMPORT           air_pump
+   29 00000000                 IMPORT           air_pump_clear
+   30 00000000                 IMPORT           update_time
+   31 00000000                 IMPORT           lose_life
+   32 00000000                 IMPORT           initial_enemy
+   33 00000000         
+   34 00000000                 EXPORT           player_pose
+   35 00000000                 EXPORT           enemy_num
+   36 00000000                 EXPORT           player_lives
+   37 00000000                 EXPORT           new_level_flag
+   38 00000000                 EXPORT           game_over
+   39 00000000                 EXPORT           level
+   40 00000000                 EXPORT           slow_enemy_flag
+   41 00000000                 EXPORT           start_state
+   42 00000000                 EXPORT           pause_state
+   43 00000000                 EXPORT           time_value
+   44 00000000                 EXPORT           restart
+   45 00000000         
+   46 00000000                 EXPORT           enemy_position_generator
+   47 00000000         
+   48 00000000                 IMPORT           enemy_type
+   49 00000000                 IMPORT           enemy_dir
+   50 00000000                 IMPORT           enemyX1_pos
+   51 00000000                 IMPORT           enemyX2_pos
+   52 00000000                 IMPORT           enemyB_pos
+   53 00000000                 IMPORT           enemyX1_dir
+   54 00000000                 IMPORT           enemyX2_dir
+   55 00000000                 IMPORT           enemyB_dir
+   56 00000000                 IMPORT           enemyX1_type
+   57 00000000                 IMPORT           enemyX2_type
+   58 00000000                 IMPORT           enemyB_type
+   59 00000000                 IMPORT           enemy_Identity
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+   60 00000000                 IMPORT           enemyB_live
+   61 00000000                 IMPORT           enemyX1_live
+   62 00000000                 IMPORT           enemyX2_live
+   63 00000000                 IMPORT           enemyB_curPos
+   64 00000000                 IMPORT           enemyX1_curPos
+   65 00000000                 IMPORT           enemyX2_curPos
+   66 00000000                 IMPORT           enemyMove_flag
+   67 00000000         
+   68 00000000                 IMPORT           T1TC
+   69 00000000                 IMPORT           div_and_mod
+   70 00000000         
+   71 00000000         
+   72 00000000 0C 57 65 
+              6C 63 6F 
+              6D 65 20 
+              74 6F 20 
+              6C 61 62 
+              20 23 37 
+              21 20 49 
+              6E 20 74 
+              68 69 73 
+              20 6C 61 
+              62 2C 20 
+              77 65 20 
+              77 69 6C 
+              6C 20 62 
+              65 20 73 
+              68 6F 77 
+              69 6E 67 
+              20 73 69 
+              6D 70 6C 
+              69 66 69 
+              65 64 20 
+              57 65 65 
+              20 44 69 
+              67 20 44 
+              75 67 00 instruction1
+                               =                12, "Welcome to lab #7! In this
+ lab, we will be showing simplified Wee Dig Dug", 0
+   73 0000004B 0D 0A 4B 
+              65 79 20 
+              66 6F 72 
+              20 63 6F 
+              6E 74 72 
+              6F 6C 20 
+              74 68 65 
+              20 6D 6F 
+              76 69 6E 
+              67 20 63 
+              68 61 72 
+              61 63 74 
+              65 72 3A 
+              0D 0A 20 
+              20 20 20 
+              31 2E 20 
+              27 77 27 
+              2C 27 73 
+              27 2C 27 
+              64 27 20 
+
+
+
+ARM Macro Assembler    Page 3 
+
+
+              61 6E 64 
+              20 27 61 
+              27 3A 20 
+              63 68 61 
+              6E 67 65 
+              20 64 69 
+              72 65 63 
+              74 69 6F 
+              6E 20 66 
+              6F 72 20 
+              75 70 2C 
+              64 6F 77 
+              6E 2C 72 
+              69 67 68 
+              74 20 61 
+              6E 64 20 
+              6C 65 66 
+              74 0D 0A 
+              20 20 20 
+              20 32 2E 
+              20 27 71 
+              27 3A 20 
+              45 78 69 
+              74 20 74 
+              68 65 20 
+              67 61 6D 
+              65 0D 0A 
+              20 20 20 
+              20 33 2E 
+              20 4D 65 
+              6D 6F 72 
+              79 20 50 
+              75 73 68 
+              20 42 75 
+              74 74 6F 
+              6E 3A 20 
+              54 6F 20 
+              70 61 75 
+              73 65 2F 
+              72 65 73 
+              74 61 72 
+              74 20 74 
+              68 65 20 
+              67 61 6D 
+              65 0D 0A 
+              47 50 49 
+              4F 20 49 
+              6E 74 65 
+              72 66 61 
+              63 65 20 
+              75 73 61 
+              67 65 3A 
+              20 0D 0A 
+              20 20 20 
+              20 31 2E 
+              20 46 6F 
+              75 72 20 
+              4C 45 44 
+              3A 20 49 
+
+
+
+ARM Macro Assembler    Page 4 
+
+
+              6E 64 69 
+              63 61 74 
+              65 20 6E 
+              75 6D 62 
+              65 72 20 
+              6F 66 20 
+              6C 69 76 
+              65 73 0D 
+              0A 20 20 
+              20 20 32 
+              2E 20 52 
+              47 42 20 
+              4C 45 44 
+              3A 20 49 
+              6E 64 69 
+              63 61 74 
+              65 20 67 
+              61 6D 65 
+              20 73 74 
+              61 74 75 
+              73 0D 0A 
+              20 20 20 
+              20 33 2E 
+              20 53 65 
+              76 65 6E 
+              2D 53 65 
+              67 6D 65 
+              6E 74 20 
+              44 69 73 
+              70 6C 61 
+              79 3A 20 
+              49 6E 64 
+              69 63 61 
+              74 65 20 
+              6E 75 6D 
+              62 65 72 
+              20 6C 65 
+              76 65 6C 
+              20 73 74 
+              61 74 75 
+              73 0D 0A 
+              53 63 6F 
+              72 69 6E 
+              67 20 53 
+              65 63 74 
+              69 6F 6E 
+              3A 20 0D 
+              0A 20 20 
+              20 20 31 
+              2E 20 4E 
+              61 76 69 
+              67 61 74 
+              65 73 20 
+              74 68 72 
+              6F 75 67 
+              68 20 64 
+              69 72 74 
+              20 27 23 
+              27 20 77 
+
+
+
+ARM Macro Assembler    Page 5 
+
+
+              69 6C 6C 
+              20 62 65 
+              20 61 77 
+              61 72 64 
+              65 64 20 
+              31 30 20 
+              70 6F 69 
+              6E 74 73 
+              0D 0A 20 
+              20 20 20 
+              32 2E 20 
+              44 65 66 
+              65 61 74 
+              69 6E 67 
+              20 27 58 
+              27 20 6E 
+              6F 72 6D 
+              61 6C 20 
+              65 6E 65 
+              6D 79 20 
+              69 73 20 
+              77 6F 72 
+              74 68 20 
+              35 30 20 
+              70 6F 69 
+              6E 74 73 
+              0D 0A 20 
+              20 20 20 
+              33 2E 20 
+              44 65 66 
+              65 61 74 
+              69 6E 67 
+              20 27 42 
+              27 20 6E 
+              6F 72 6D 
+              61 6C 20 
+              65 6E 65 
+              6D 79 20 
+              69 73 20 
+              77 6F 72 
+              74 68 20 
+              31 30 30 
+              20 70 6F 
+              69 6E 74 
+              73 0D 0A 
+              20 20 20 
+              20 34 2E 
+              20 47 65 
+              74 74 69 
+              6E 67 20 
+              74 6F 20 
+              6E 65 78 
+              74 20 6C 
+              65 76 65 
+              6C 20 69 
+              73 20 77 
+              6F 72 74 
+              68 20 31 
+              35 30 20 
+
+
+
+ARM Macro Assembler    Page 6 
+
+
+              70 6F 69 
+              6E 74 73 
+              0D 0A 20 
+              20 20 20 
+              35 2E 20 
+              41 66 74 
+              65 72 20 
+              32 20 6D 
+              69 6E 75 
+              74 65 73 
+              20 67 61 
+              6D 65 20 
+              6F 76 65 
+              72 2C 20 
+              31 35 30 
+              20 70 6F 
+              69 6E 74 
+              73 20 77 
+              69 6C 6C 
+              20 62 65 
+              20 61 77 
+              61 72 64 
+              73 20 66 
+              6F 72 20 
+              65 61 63 
+              68 20 6C 
+              69 66 65 
+              0D 0A 50 
+              6C 65 61 
+              73 65 20 
+              70 72 65 
+              73 73 20 
+              45 6E 74 
+              65 72 20 
+              6B 65 79 
+              20 74 6F 
+              20 73 74 
+              61 72 74 
+              20 74 68 
+              65 20 67 
+              61 6D 65 
+              2E 00    instruction2
+                               =                13, 10, "Key for control the mo
+ving character:", 13, 10, "    1. 'w','s','d' and 'a': change direction for up,
+down,right and left", 13, 10, "    2. 'q': Exit the game", 13, 10, "    3. Memo
+ry Push Button: To pause/restart the game", 13, 10, "GPIO Interface usage: ", 1
+3, 10, "    1. Four LED: Indicate number of lives", 13, 10, "    2. RGB LED: In
+dicate game status", 13, 10, "    3. Seven-Segment Display: Indicate number lev
+el status", 13, 10, "Scoring Section: ", 13, 10, "    1. Navigates through dirt
+ '#' will be awarded 10 points", 13, 10, "    2. Defeating 'X' normal enemy is 
+worth 50 points", 13, 10, "    3. Defeating 'B' normal enemy is worth 100 point
+s", 13, 10, "    4. Getting to next level is worth 150 points", 13, 10, "    5.
+ After 2 minutes game over, 150 points will be awards for each life", 13, 10, "
+Please press Enter key to start the game.", 0
+   74 00000317 0C 45 78 
+              69 74 20 
+              74 68 65 
+              20 70 72 
+              6F 67 72 
+
+
+
+ARM Macro Assembler    Page 7 
+
+
+              61 6D 20 
+              73 75 63 
+              63 65 73 
+              73 66 75 
+              6C 6C 79 
+              21 00    exit_desc
+                               =                12, "Exit the program successfu
+lly!", 0
+   75 00000337 00              ALIGN
+   76 00000338         
+   77 00000338         ; 0 is game pending to start, 1 is start the game
+   78 00000338 20 20 00 
+                       start_state
+                               =                "  ", 0
+   79 0000033B 00              ALIGN
+   80 0000033C         
+   81 0000033C         ; 0 is game pending to pause, 1 is pause the game
+   82 0000033C 20 20 00 
+                       pause_state
+                               =                "  ", 0
+   83 0000033F 00              ALIGN
+   84 00000340         
+   85 00000340         ; ^: 94, v: 118, <: 60, >: 62  
+   86 00000340 20 20 00 
+                       current_char
+                               =                "  ", 0
+   87 00000343 00              ALIGN
+   88 00000344         
+   89 00000344         ; 0 is up, 1 is down, 2 is right, 3 is left
+   90 00000344 20 20 00 
+                       current_dir
+                               =                "  ", 0
+   91 00000347 00              ALIGN
+   92 00000348         
+   93 00000348 20 20 20 
+              20 20 20 
+              20 20 00 current_pose
+                               =                "        ", 0
+   94 00000351 00 00 00        ALIGN
+   95 00000354         
+   96 00000354 20 20 20 
+              00       point   =                "   ", 0
+   97 00000358                 ALIGN
+   98 00000358         
+   99 00000358 20 20 00 
+                       enemy_num
+                               =                "  ", 0
+  100 0000035B 00              ALIGN
+  101 0000035C         
+  102 0000035C 20 20 00 
+                       game_over
+                               =                "  ", 0
+  103 0000035F 00              ALIGN
+  104 00000360         
+  105 00000360 20 20 00 
+                       new_level_flag
+                               =                "  ", 0
+  106 00000363 00              ALIGN
+  107 00000364         
+
+
+
+ARM Macro Assembler    Page 8 
+
+
+  108 00000364 20 20 00 
+                       level   =                "  ", 0
+  109 00000367 00              ALIGN
+  110 00000368         
+  111 00000368 20 20 00 
+                       slow_enemy_flag
+                               =                "  ", 0
+  112 0000036B 00              ALIGN
+  113 0000036C         
+  114 0000036C 20 20 00 
+                       player_lives
+                               =                "  ", 0
+  115 0000036F 00              ALIGN
+  116 00000370         
+  117 00000370 20 20 00 
+                       time_value
+                               =                "  ", 0
+  118 00000373 00              ALIGN
+  119 00000374         
+  120 00000374 20 20 00 
+                       player_movement
+                               =                "  ", 0
+  121 00000377 00              ALIGN
+  122 00000378         
+  123 00000378 20 20 20 
+              00       player_pose
+                               =                "   ", 0
+  124 0000037C                 ALIGN
+  125 0000037C         
+  126 0000037C E0004018 
+                       T0MR0   EQU              0xE0004018  ; Timer 0, Match Re
+                                                            gister 0
+  127 0000037C E0004008 
+                       T0TC    EQU              0xE0004008  ; Timer0 Counter Re
+                                                            gister
+  128 0000037C                 ALIGN
+  129 0000037C         
+  130 0000037C         
+  131 0000037C         ; Center position on grid
+  132 0000037C 000000F1 
+                       CENTER  EQU              241
+  133 0000037C                 ALIGN
+  134 0000037C         
+  135 0000037C         lab7
+  136 0000037C E92D4000        STMFD            sp!, {lr}
+  137 00000380         
+  138 00000380         
+  139 00000380 E59F4AB0        ldr              r4, =instruction1
+  140 00000384 EBFFFFFE        bl               output_string
+  141 00000388         
+  142 00000388 E59F4AAC        ldr              r4, =instruction2
+  143 0000038C EBFFFFFE        bl               output_string
+  144 00000390         
+  145 00000390         ; Display Seven Segment to 0
+  146 00000390 E3A00000        mov              r0, #0
+  147 00000394 EBFFFFFE        bl               display_digit_on_7_seg
+  148 00000398         
+  149 00000398         ; Display RGB_LED to Whites
+  150 00000398 E3A00036        mov              r0, #54
+
+
+
+ARM Macro Assembler    Page 9 
+
+
+  151 0000039C EBFFFFFE        bl               Illuminate_RGB_LED
+  152 000003A0         
+  153 000003A0 E3A00000        mov              r0, #0
+  154 000003A4 EBFFFFFE        bl               illuminateLiveLEDs
+  155 000003A8         
+  156 000003A8         restart
+  157 000003A8         ; Initialize Seven-Segment Display to 0
+  158 000003A8 E3A00000        mov              r0, #0
+  159 000003AC E59F4A8C        ldr              r4, =start_state
+  160 000003B0 E5840000        str              r0, [r4]
+  161 000003B4         
+  162 000003B4         ; Initialize Button Trigger to be OFF
+  163 000003B4 E3A00000        mov              r0, #0
+  164 000003B8 E59F4A84        ldr              r4, =pause_state
+  165 000003BC E5840000        str              r0, [r4]
+  166 000003C0         
+  167 000003C0         ; Set game_over to 0
+  168 000003C0 E3A00000        mov              r0, #0
+  169 000003C4 E59F4A7C        ldr              r4, =game_over
+  170 000003C8 E5840000        str              r0, [r4]
+  171 000003CC         
+  172 000003CC         ; Initialize points to 0
+  173 000003CC E3A00000        mov              r0, #0
+  174 000003D0 E59F4A74        ldr              r4, =point
+  175 000003D4 E5840000        str              r0, [r4]
+  176 000003D8         
+  177 000003D8         ; Initialize Time value to 0
+  178 000003D8 E3A00000        mov              r0, #0
+  179 000003DC E59F4A6C        ldr              r4, =time_value
+  180 000003E0 E5840000        str              r0, [r4]
+  181 000003E4         
+  182 000003E4         loop
+  183 000003E4 E59F4A5C        ldr              r4, =game_over
+  184 000003E8 E5940000        ldr              r0, [r4]
+  185 000003EC E3500000        cmp              r0, #0
+  186 000003F0 0AFFFFFB        beq              loop
+  187 000003F4 EAFFFFFE        b                restart
+  188 000003F8         
+  189 000003F8         Exit_Program
+  190 000003F8         
+  191 000003F8 E59F4A54        LDR              r4, =IO0CLR
+  192 000003FC E5940000        LDR              r0, [r4]    ; Load current stat
+                                                            e of IO0CLR
+  193 00000400 E3800DFE        ORR              r0, r0, #0x00003F80 ; Set IO0CL
+                                                            R, Clear All seven 
+                                                            segment
+  194 00000404 E5840000        STR              r0, [r4]    ; Update IO0CLR
+  195 00000408         
+  196 00000408 E59F4A48        ldr              r4, =exit_desc
+  197 0000040C EBFFFFFE        bl               output_string
+  198 00000410         
+  199 00000410         
+  200 00000410 E8BD4000        LDMFD            sp!,{lr}
+  201 00000414 E12FFF1E        BX               lr
+  202 00000418         
+  203 00000418         
+  204 00000418         
+  205 00000418         
+  206 00000418         ;***********************************
+
+
+
+ARM Macro Assembler    Page 10 
+
+
+  207 00000418         ;     Enemy type initialization
+  208 00000418         ;***********************************
+  209 00000418         enemy_position_generator
+  210 00000418 E92D4010        STMFD            sp!, {r4, lr}
+  211 0000041C         
+  212 0000041C EBFFFFFE        bl               random_position ; Position Stor
+                                                            e in r0
+  213 00000420         
+  214 00000420 E3500000        cmp              r0, #0      ; 0 is Enemy_B
+  215 00000424 1A000008        bne              generator_Enemy_X1
+  216 00000428 EB00001C        bl               enemy_position_check
+  217 0000042C E59F4A28        ldr              r4, =enemyB_pos
+  218 00000430 E5841000        str              r1, [r4]
+  219 00000434 E59F4A24        ldr              r4, =enemyB_curPos
+  220 00000438 E5841000        str              r1, [r4]
+  221 0000043C E59F4A20        ldr              r4, =enemyB_type
+  222 00000440 E5940000        ldr              r0, [r4]
+  223 00000444 EB000045        bl               insert_empty
+  224 00000448         
+  225 00000448 EA000012        b                done_enemy_pos
+  226 0000044C         
+  227 0000044C         generator_Enemy_X1
+  228 0000044C E3500001        cmp              r0, #1      ; 1 is Enemy_X1
+  229 00000450 1A000008        bne              generator_Enemy_X2
+  230 00000454 EB000011        bl               enemy_position_check
+  231 00000458 E59F4A08        ldr              r4, =enemyX1_pos
+  232 0000045C E5841000        str              r1, [r4]
+  233 00000460 E59F4A04        ldr              r4, =enemyX1_curPos
+  234 00000464 E5841000        str              r1, [r4]
+  235 00000468 E59F4A00        ldr              r4, =enemyX1_type
+  236 0000046C E5940000        ldr              r0, [r4]
+  237 00000470 EB00003A        bl               insert_empty
+  238 00000474         
+  239 00000474 EA000007        b                done_enemy_pos
+  240 00000478         
+  241 00000478         generator_Enemy_X2
+  242 00000478 EB000008        bl               enemy_position_check
+  243 0000047C E59F49F0        ldr              r4, =enemyX2_pos
+  244 00000480 E5841000        str              r1, [r4]
+  245 00000484 E59F49EC        ldr              r4, =enemyX2_curPos
+  246 00000488 E5841000        str              r1, [r4]
+  247 0000048C E59F49E8        ldr              r4, =enemyX2_type
+  248 00000490 E5940000        ldr              r0, [r4]
+  249 00000494 EB000031        bl               insert_empty
+  250 00000498         
+  251 00000498         
+  252 00000498         done_enemy_pos
+  253 00000498 E8BD4010        LDMFD            sp!, {r4, lr}
+  254 0000049C E12FFF1E        BX               lr
+  255 000004A0         
+  256 000004A0         ;***********************************
+  257 000004A0         ; Check Current position is valid
+  258 000004A0         ;     Input: r1 = random_pos
+  259 000004A0         ;     Output: r1 = enemy_pose
+  260 000004A0         ;***********************************
+  261 000004A0         enemy_position_check
+  262 000004A0 E92D4001        STMFD            sp!, {r0, lr}
+  263 000004A4         
+  264 000004A4         start_place
+
+
+
+ARM Macro Assembler    Page 11 
+
+
+  265 000004A4         ; Put char to board
+  266 000004A4 E59F49D4        ldr              r4, =board
+  267 000004A8 E7D40001        ldrb             r0, [r4, r1]
+  268 000004AC E3500042        cmp              r0, #66     ; B
+  269 000004B0 0A000006        beq              random_again
+  270 000004B4 E3500078        cmp              r0, #120    ; x
+  271 000004B8 0A000004        beq              random_again
+  272 000004BC E350005E        cmp              r0, #94     ; ^
+  273 000004C0 0A000002        beq              random_again
+  274 000004C4 E3500020        cmp              r0, #32     ; Space
+  275 000004C8 0A000000        beq              random_again
+  276 000004CC         
+  277 000004CC EA000001        b                check_left
+  278 000004D0         
+  279 000004D0         random_again
+  280 000004D0 EBFFFFFE        bl               random_position
+  281 000004D4 EAFFFFF2        b                start_place
+  282 000004D8         
+  283 000004D8         check_left
+  284 000004D8 E2412001        sub              r2, r1, #1  ; Get left position
+                                                            
+  285 000004DC E59F499C        ldr              r4, =board
+  286 000004E0 E7D40002        ldrb             r0, [r4, r2]
+  287 000004E4 E3500020        cmp              r0, #32     ; Space
+  288 000004E8 0AFFFFF8        beq              random_again
+  289 000004EC         
+  290 000004EC         check_right
+  291 000004EC E2812001        add              r2, r1, #1  ; Get right positio
+                                                            n
+  292 000004F0 E59F4988        ldr              r4, =board
+  293 000004F4 E7D40002        ldrb             r0, [r4, r2]
+  294 000004F8 E3500020        cmp              r0, #32     ; Space
+  295 000004FC 0AFFFFF3        beq              random_again
+  296 00000500         
+  297 00000500         check_up
+  298 00000500 E2412017        sub              r2, r1, #23 ; Get up position
+  299 00000504 E59F4974        ldr              r4, =board
+  300 00000508 E7D40002        ldrb             r0, [r4, r2]
+  301 0000050C E3500020        cmp              r0, #32     ; Space
+  302 00000510 0AFFFFEE        beq              random_again
+  303 00000514 E350005E        cmp              r0, #94     ; ^
+  304 00000518 0AFFFFEC        beq              random_again
+  305 0000051C E3500078        cmp              r0, #120    ; x
+  306 00000520 0AFFFFEA        beq              random_again
+  307 00000524 E3500042        cmp              r0, #66     ; B
+  308 00000528 0AFFFFE8        beq              random_again
+  309 0000052C         
+  310 0000052C         check_down
+  311 0000052C E2812017        add              r2, r1, #23
+  312 00000530 E59F4948        ldr              r4, =board
+  313 00000534 E7D40002        ldrb             r0, [r4, r2]
+  314 00000538 E3500020        cmp              r0, #32     ; Space
+  315 0000053C 0AFFFFE3        beq              random_again
+  316 00000540 E350005E        cmp              r0, #94     ; ^
+  317 00000544 0AFFFFE1        beq              random_again
+  318 00000548 E3500078        cmp              r0, #120    ; x
+  319 0000054C 0AFFFFDF        beq              random_again
+  320 00000550 E3500042        cmp              r0, #66     ; B
+  321 00000554 0AFFFFDD        beq              random_again
+
+
+
+ARM Macro Assembler    Page 12 
+
+
+  322 00000558         
+  323 00000558 E8BD4001        LDMFD            sp!, {r0, lr}
+  324 0000055C E12FFF1E        BX               lr
+  325 00000560         
+  326 00000560         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  327 00000560         ;           Input:
+  328 00000560         ;       r0 = enemy_type 
+  329 00000560         ;       r1 = enemy_pose
+  330 00000560         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  331 00000560         insert_empty
+  332 00000560 E92D4000        STMFD            sp!, {lr}
+  333 00000564         
+  334 00000564 E59F4914        ldr              r4, =board
+  335 00000568 E7C40001        strb             r0, [r4, r1]
+  336 0000056C         
+  337 0000056C E2412001        sub              r2, r1, #1
+  338 00000570 E7D40002        ldrb             r0, [r4, r2]
+  339 00000574 E350005A        cmp              r0, #90     ; Z
+  340 00000578 0A000001        beq              store_right
+  341 0000057C E3A00020        mov              r0, #32     ; Space
+  342 00000580 E7C40002        strb             r0, [r4, r2]
+  343 00000584         
+  344 00000584         store_right
+  345 00000584 E2812001        add              r2, r1, #1
+  346 00000588 E7D40002        ldrb             r0, [r4, r2]
+  347 0000058C E350005A        cmp              r0, #90     ; Z
+  348 00000590 0A000001        beq              store_done
+  349 00000594 E3A00020        mov              r0, #32     ; Space
+  350 00000598 E7C40002        strb             r0, [r4, r2]
+  351 0000059C         
+  352 0000059C         store_done
+  353 0000059C E8BD4000        LDMFD            sp!, {lr}
+  354 000005A0 E12FFF1E        BX               lr
+  355 000005A4         
+  356 000005A4         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  357 000005A4         ;           Input:
+  358 000005A4         ;       r0 = enemy_type 
+  359 000005A4         ;       r1 = enemy_pose
+  360 000005A4         ;       r2 = enemy_dire
+  361 000005A4         ;           Ouput:
+  362 000005A4         ;       r0 = enemy_type 
+  363 000005A4         ;       r1 = enemy_direction
+  364 000005A4         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  365 000005A4         enemy_direction
+  366 000005A4 E92D4009        STMFD            sp!, {r0, r3, lr}
+  367 000005A8         
+  368 000005A8 E59F48D0        ldr              r4, =board
+  369 000005AC         
+  370 000005AC         choose_again
+  371 000005AC E3A05000        mov              r5, #0      ; Counter
+  372 000005B0 E3A06000        mov              r6, #0      ; Movement Check
+  373 000005B4         
+  374 000005B4 E3520000        cmp              r2, #0
+  375 000005B8 0A000005        beq              check_up_pos
+  376 000005BC E3520001        cmp              r2, #1
+  377 000005C0 0A000014        beq              check_down_pos
+  378 000005C4 E3520002        cmp              r2, #2
+  379 000005C8 0A000023        beq              check_left_pos
+  380 000005CC E3520003        cmp              r2, #3
+
+
+
+ARM Macro Assembler    Page 13 
+
+
+  381 000005D0 0A000032        beq              check_right_pos
+  382 000005D4         
+  383 000005D4         check_up_pos
+  384 000005D4 EB000044        bl               checkUp
+  385 000005D8 E3550001        cmp              r5, #1      ; Empty Space
+  386 000005DC 0A00003F        beq              return_dir
+  387 000005E0 E3A05000        mov              r5, #0      ; Counter
+  388 000005E4 E3A06000        mov              r6, #0      ; Movement Check   
+                                                                  
+  389 000005E8 EB00004D        bl               checkDown
+  390 000005EC EB000058        bl               checkLeft
+  391 000005F0 EB000063        bl               checkRight
+  392 000005F4 E3550001        cmp              r5, #1
+  393 000005F8 0A000038        beq              return_dir
+  394 000005FC E3550002        cmp              r5, #2
+  395 00000600 0A000034        beq              random_pick_two
+  396 00000604         
+  397 00000604 EBFFFFFE        bl               random_dir
+  398 00000608 E3520000        cmp              r2, #0
+  399 0000060C 1A000033        bne              return_dir
+  400 00000610 E3A02003        mov              r2, #3
+  401 00000614 EA000031        b                return_dir
+  402 00000618         
+  403 00000618         check_down_pos
+  404 00000618 EB000041        bl               checkDown
+  405 0000061C E3550001        cmp              r5, #1      ; Empty Space
+  406 00000620 0A00002E        beq              return_dir
+  407 00000624 E3A05000        mov              r5, #0      ; Counter
+  408 00000628 E3A06000        mov              r6, #0      ; Movement Check
+  409 0000062C EB00002E        bl               checkUp
+  410 00000630 EB000047        bl               checkLeft
+  411 00000634 EB000052        bl               checkRight
+  412 00000638 E3550001        cmp              r5, #1
+  413 0000063C 0A000027        beq              return_dir
+  414 00000640 E3550002        cmp              r5, #2
+  415 00000644 0A000023        beq              random_pick_two
+  416 00000648         
+  417 00000648 EBFFFFFE        bl               random_dir
+  418 0000064C E3520001        cmp              r2, #1
+  419 00000650 1A000022        bne              return_dir
+  420 00000654 E3A02003        mov              r2, #3
+  421 00000658 EA000020        b                return_dir
+  422 0000065C         
+  423 0000065C         check_left_pos
+  424 0000065C EB00003C        bl               checkLeft
+  425 00000660 E3550001        cmp              r5, #1      ; Empty Space
+  426 00000664 0A00001D        beq              return_dir
+  427 00000668 E3A05000        mov              r5, #0      ; Counter
+  428 0000066C E3A06000        mov              r6, #0      ; Movement Check
+  429 00000670 EB00001D        bl               checkUp
+  430 00000674 EB00002A        bl               checkDown
+  431 00000678 EB000041        bl               checkRight
+  432 0000067C E3550001        cmp              r5, #1
+  433 00000680 0A000016        beq              return_dir
+  434 00000684 E3550002        cmp              r5, #2
+  435 00000688 0A000012        beq              random_pick_two
+  436 0000068C         
+  437 0000068C EBFFFFFE        bl               random_dir
+  438 00000690 E3520002        cmp              r2, #2
+
+
+
+ARM Macro Assembler    Page 14 
+
+
+  439 00000694 1A000011        bne              return_dir
+  440 00000698 E3A02003        mov              r2, #3
+  441 0000069C EA00000F        b                return_dir
+  442 000006A0         
+  443 000006A0         check_right_pos
+  444 000006A0 EB000037        bl               checkRight
+  445 000006A4 E3550001        cmp              r5, #1      ; Empty Space
+  446 000006A8 0A00000C        beq              return_dir
+  447 000006AC E3A05000        mov              r5, #0      ; Counter
+  448 000006B0 E3A06000        mov              r6, #0      ; Movement Check
+  449 000006B4 EB00000C        bl               checkUp
+  450 000006B8 EB000019        bl               checkDown
+  451 000006BC EB000024        bl               checkLeft
+  452 000006C0 E3550001        cmp              r5, #1
+  453 000006C4 0A000005        beq              return_dir
+  454 000006C8 E3550002        cmp              r5, #2
+  455 000006CC 0A000001        beq              random_pick_two
+  456 000006D0         
+  457 000006D0 EBFFFFFE        bl               random_dir
+  458 000006D4 EA000001        b                return_dir
+  459 000006D8         
+  460 000006D8         random_pick_two
+  461 000006D8 EB000041        bl               check_two_dir
+  462 000006DC EAFFFFFF        b                return_dir
+  463 000006E0         
+  464 000006E0         return_dir
+  465 000006E0 E1A01002        mov              r1, r2
+  466 000006E4         
+  467 000006E4 E8BD4009        LDMFD            sp!, {r0, r3, lr}
+  468 000006E8 E12FFF1E        BX               lr
+  469 000006EC         
+  470 000006EC         checkUp
+  471 000006EC E92D4000        STMFD            SP!, {lr}
+  472 000006F0 E2413017        sub              r3, r1, #23
+  473 000006F4 E353005D        cmp              r3, #93     ; If reach second e
+                                                            mpty line, then sta
+                                                            y up. It is not abl
+                                                            e to move to first 
+                                                            empty line
+  474 000006F8 BA000007        blt              checkUp_done
+  475 000006FC E7D40003        ldrb             r0, [r4, r3]
+  476 00000700 E3500023        cmp              r0, #35     ; #
+  477 00000704 0A000004        beq              checkUp_done
+  478 00000708 E350005A        cmp              r0, #90     ; Z
+  479 0000070C 0A000002        beq              checkUp_done
+  480 00000710         
+  481 00000710 E2855001        add              r5, r5, #1
+  482 00000714 E3866001        orr              r6, r6, #1
+  483 00000718 E3A02000        mov              r2, #0
+  484 0000071C         
+  485 0000071C         checkUp_done
+  486 0000071C E8BD4000        LDMFD            sp!, {lr}
+  487 00000720 E12FFF1E        BX               lr
+  488 00000724         
+  489 00000724         
+  490 00000724         checkDown
+  491 00000724 E92D4000        STMFD            SP!, {lr}
+  492 00000728 E2813017        add              r3, r1, #23
+  493 0000072C E7D40003        ldrb             r0, [r4, r3]
+
+
+
+ARM Macro Assembler    Page 15 
+
+
+  494 00000730 E3500023        cmp              r0, #35     ; #
+  495 00000734 0A000004        beq              checkDown_done
+  496 00000738 E350005A        cmp              r0, #90     ; Z
+  497 0000073C 0A000002        beq              checkDown_done
+  498 00000740         
+  499 00000740 E2855001        add              r5, r5, #1
+  500 00000744 E3866002        orr              r6, r6, #2
+  501 00000748 E3A02001        mov              r2, #1
+  502 0000074C         
+  503 0000074C         checkDown_done
+  504 0000074C E8BD4000        LDMFD            sp!, {lr}
+  505 00000750 E12FFF1E        BX               lr
+  506 00000754         
+  507 00000754         
+  508 00000754         checkLeft
+  509 00000754 E92D4000        STMFD            SP!, {lr}
+  510 00000758 E2413001        sub              r3, r1, #1
+  511 0000075C E7D40003        ldrb             r0, [r4, r3]
+  512 00000760 E3500023        cmp              r0, #35     ; #
+  513 00000764 0A000004        beq              checkLeft_done
+  514 00000768 E350005A        cmp              r0, #90     ; Z
+  515 0000076C 0A000002        beq              checkLeft_done
+  516 00000770         
+  517 00000770 E2855001        add              r5, r5, #1
+  518 00000774 E3866003        orr              r6, r6, #3
+  519 00000778 E3A02002        mov              r2, #2
+  520 0000077C         
+  521 0000077C         checkLeft_done
+  522 0000077C E8BD4000        LDMFD            sp!, {lr}
+  523 00000780 E12FFF1E        BX               lr
+  524 00000784         
+  525 00000784         
+  526 00000784         checkRight
+  527 00000784 E92D4000        STMFD            SP!, {lr}
+  528 00000788 E2813001        add              r3, r1, #1
+  529 0000078C E7D40003        ldrb             r0, [r4, r3]
+  530 00000790 E3500023        cmp              r0, #35     ; #
+  531 00000794 0A000004        beq              checkRight_done
+  532 00000798 E350005A        cmp              r0, #90     ; Z
+  533 0000079C 0A000002        beq              checkRight_done
+  534 000007A0         
+  535 000007A0 E2855001        add              r5, r5, #1
+  536 000007A4 E3866004        orr              r6, r6, #4
+  537 000007A8 E3A02003        mov              r2, #3
+  538 000007AC         
+  539 000007AC         checkRight_done
+  540 000007AC E8BD4000        LDMFD            sp!, {lr}
+  541 000007B0 E12FFF1E        BX               lr
+  542 000007B4         
+  543 000007B4         
+  544 000007B4         
+  545 000007B4         random_dir_two
+  546 000007B4 E92D401B        STMFD            sp!, {r0, r1, r3, r4, lr}
+  547 000007B8         
+  548 000007B8         ; Obtain Random Number from Timer Counter
+  549 000007B8 E59F46C4        ldr              r4, =T1TC
+  550 000007BC E5940000        ldr              r0, [r4]
+  551 000007C0 E1A01220        mov              r1, r0, lsr #4
+  552 000007C4 E201100F        bic              r1, r1, #0xFFFFFFF0
+
+
+
+ARM Macro Assembler    Page 16 
+
+
+  553 000007C8 E20000FF        bic              r0, r0, #0xFFFFFF00
+  554 000007CC E0800001        add              r0, r0, r1
+  555 000007D0 E3A01002        mov              r1, #2
+  556 000007D4 EBFFFFFE        bl               div_and_mod
+  557 000007D8         
+  558 000007D8 E1A02001        mov              r2, r1
+  559 000007DC E8BD401B        LDMFD            sp!, {r0, r1, r3, r4, lr}
+  560 000007E0 E12FFF1E        BX               lr
+  561 000007E4         
+  562 000007E4         
+  563 000007E4         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  564 000007E4         ;
+  565 000007E4         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  566 000007E4         check_two_dir
+  567 000007E4 E92D4000        STMFD            SP!, {lr}
+  568 000007E8         
+  569 000007E8 E3560003        cmp              r6, #0x3
+  570 000007EC         ; bl checkUp
+  571 000007EC         ; bl checkDown
+  572 000007EC EBFFFFF0        bl               random_dir_two
+  573 000007F0 EA000021        b                done_check_two
+  574 000007F4         
+  575 000007F4 E3560005        cmp              r6, #0x5
+  576 000007F8         ; bl checkUp
+  577 000007F8         ; bl checkLeft
+  578 000007F8 EBFFFFED        bl               random_dir_two
+  579 000007FC E3520000        cmp              r2, #0
+  580 00000800 0A00001D        beq              done_check_two
+  581 00000804 E3A02002        mov              r2, #2
+  582 00000808 EA00001B        b                done_check_two
+  583 0000080C         
+  584 0000080C E3560009        cmp              r6, #0x9
+  585 00000810         ; bl checkUp
+  586 00000810         ; bl checkRight
+  587 00000810 EBFFFFE7        bl               random_dir_two
+  588 00000814 E3520000        cmp              r2, #0
+  589 00000818 0A000017        beq              done_check_two
+  590 0000081C E3A02003        mov              r2, #3
+  591 00000820 EA000015        b                done_check_two
+  592 00000824         
+  593 00000824 E3560006        cmp              r6, #0x6
+  594 00000828         ; bl checkDown
+  595 00000828         ; bl checkLeft
+  596 00000828 EBFFFFE1        bl               random_dir_two
+  597 0000082C E3520000        cmp              r2, #0
+  598 00000830 0A00000D        beq              mov_left
+  599 00000834 E3A02001        mov              r2, #1
+  600 00000838 EA00000F        b                done_check_two
+  601 0000083C         
+  602 0000083C E356000A        cmp              r6, #0xA
+  603 00000840         ; bl checkDown
+  604 00000840         ; bl checkRight
+  605 00000840 EBFFFFDB        bl               random_dir_two
+  606 00000844 E3520000        cmp              r2, #0
+  607 00000848 0A000009        beq              mov_right
+  608 0000084C E3A02001        mov              r2, #1
+  609 00000850 EA000009        b                done_check_two
+  610 00000854         
+  611 00000854 E356000C        cmp              r6, #0xC
+
+
+
+ARM Macro Assembler    Page 17 
+
+
+  612 00000858         ; bl checkLeft
+  613 00000858         ; bl checkRight
+  614 00000858 EBFFFFD5        bl               random_dir_two
+  615 0000085C E3520000        cmp              r2, #0
+  616 00000860 0A000003        beq              mov_right
+  617 00000864 E3A02002        mov              r2, #2
+  618 00000868 EA000003        b                done_check_two
+  619 0000086C         
+  620 0000086C         mov_left
+  621 0000086C E3A02002        mov              r2, #2
+  622 00000870 EA000001        b                done_check_two
+  623 00000874         
+  624 00000874         mov_right
+  625 00000874 E3A02003        mov              r2, #3
+  626 00000878 EAFFFFFF        b                done_check_two
+  627 0000087C         
+  628 0000087C         done_check_two
+  629 0000087C E8BD4000        LDMFD            sp!, {lr}
+  630 00000880 E12FFF1E        BX               lr
+  631 00000884         
+  632 00000884         
+  633 00000884         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  634 00000884         ;           Input:
+  635 00000884         ;       r1 = enemy_dir
+  636 00000884         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  637 00000884         enemy_dirChoice
+  638 00000884 E92D4000        STMFD            sp!, {lr}
+  639 00000888         
+  640 00000888 E3510000        cmp              r1, #0
+  641 0000088C 0A000005        beq              moveUp_enemy
+  642 00000890 E3510001        cmp              r1, #1
+  643 00000894 0A000005        beq              moveDown_enemy
+  644 00000898 E3510002        cmp              r1, #2
+  645 0000089C 0A000005        beq              moveLeft_enemy
+  646 000008A0 E3510003        cmp              r1, #3
+  647 000008A4 0A000005        beq              moveRight_enemy
+  648 000008A8         
+  649 000008A8         moveUp_enemy
+  650 000008A8 EB000008        bl               enemy_moveUp
+  651 000008AC EA000005        b                done_choose
+  652 000008B0         
+  653 000008B0         moveDown_enemy
+  654 000008B0 EB00001C        bl               enemy_moveDown
+  655 000008B4 EA000003        b                done_choose
+  656 000008B8         
+  657 000008B8         moveLeft_enemy
+  658 000008B8 EB000030        bl               enemy_moveLeft
+  659 000008BC EA000001        b                done_choose
+  660 000008C0         
+  661 000008C0         moveRight_enemy
+  662 000008C0 EB000044        bl               enemy_moveRight
+  663 000008C4 EAFFFFFF        b                done_choose
+  664 000008C8         
+  665 000008C8         done_choose
+  666 000008C8 E8BD4000        LDMFD            sp!, {lr}
+  667 000008CC E12FFF1E        BX               lr
+  668 000008D0         
+  669 000008D0         
+  670 000008D0         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+ARM Macro Assembler    Page 18 
+
+
+  671 000008D0         ;           Input:
+  672 000008D0         ;       r0 = enemy_type 
+  673 000008D0         ;       r3 = enemy_pose_address
+  674 000008D0         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  675 000008D0         enemy_moveUp
+  676 000008D0 E92D4000        STMFD            sp!, {lr}
+  677 000008D4         
+  678 000008D4 E5931000        ldr              r1, [r3]    ; Load current posi
+                                                            tion from enemy_pos
+                                                            e
+  679 000008D8 E2411017        sub              r1, r1, #23 ; Get next position
+                                                            
+  680 000008DC E59F459C        ldr              r4, =board
+  681 000008E0 E7D42001        ldrb             r2, [r4, r1] ; Load next positi
+                                                            on char
+  682 000008E4 E352003C        cmp              r2, #60     ;<
+  683 000008E8 0A00000B        beq              lose_life_enemy_up
+  684 000008EC E352003E        cmp              r2, #62     ;>
+  685 000008F0 0A000009        beq              lose_life_enemy_up
+  686 000008F4 E3520076        cmp              r2, #118    ;v
+  687 000008F8 0A000007        beq              lose_life_enemy_up
+  688 000008FC E352005E        cmp              r2, #94     ;^
+  689 00000900 0A000005        beq              lose_life_enemy_up
+  690 00000904         
+  691 00000904         enemy_update_up
+  692 00000904 E7C40001        strb             r0, [r4, r1] ; Store enemy type
+                                                             to next position
+  693 00000908 E5831000        str              r1, [r3]    ; Update current po
+                                                            sition to next posi
+                                                            tion
+  694 0000090C E3A00020        mov              r0, #32     ; Space, 32
+  695 00000910 E2811017        add              r1, r1, #23 ; Get current posit
+                                                            ion
+  696 00000914 E7C40001        strb             r0, [r4, r1] ; Clear current po
+                                                            sition char
+  697 00000918 EA000000        b                enemy_done_move_up
+  698 0000091C         
+  699 0000091C         lose_life_enemy_up
+  700 0000091C EBFFFFFE        bl               lose_life
+  701 00000920         
+  702 00000920         enemy_done_move_up
+  703 00000920 E8BD4000        LDMFD            sp!, {lr}
+  704 00000924 E12FFF1E        BX               lr
+  705 00000928         
+  706 00000928         
+  707 00000928         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  708 00000928         ;           Input:
+  709 00000928         ;       r0 = enemy_type 
+  710 00000928         ;       r3 = enemy_pose_address
+  711 00000928         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  712 00000928         enemy_moveDown
+  713 00000928 E92D4000        STMFD            sp!, {lr}
+  714 0000092C         
+  715 0000092C E5931000        ldr              r1, [r3]    ; Load current posi
+                                                            tion from enemy_pos
+                                                            e
+  716 00000930 E2811017        add              r1, r1, #23 ; Get next position
+                                                            
+  717 00000934 E59F4544        ldr              r4, =board
+
+
+
+ARM Macro Assembler    Page 19 
+
+
+  718 00000938 E7D42001        ldrb             r2, [r4, r1] ; Load next positi
+                                                            on char
+  719 0000093C E352003C        cmp              r2, #60     ;<
+  720 00000940 0A00000B        beq              lose_life_enemy_down
+  721 00000944 E352003E        cmp              r2, #62     ;>
+  722 00000948 0A000009        beq              lose_life_enemy_down
+  723 0000094C E3520076        cmp              r2, #118    ;v
+  724 00000950 0A000007        beq              lose_life_enemy_down
+  725 00000954 E352005E        cmp              r2, #94     ;^
+  726 00000958 0A000005        beq              lose_life_enemy_down
+  727 0000095C         
+  728 0000095C         enemy_update_down
+  729 0000095C E7C40001        strb             r0, [r4, r1] ; Store enemy type
+                                                             to next position
+  730 00000960 E5831000        str              r1, [r3]    ; Update current po
+                                                            sition to next posi
+                                                            tion
+  731 00000964 E3A00020        mov              r0, #32     ; Space, 32
+  732 00000968 E2411017        sub              r1, r1, #23 ; Get current posit
+                                                            ion
+  733 0000096C E7C40001        strb             r0, [r4, r1] ; Clear current po
+                                                            sition char
+  734 00000970 EA000000        b                enemy_done_move_down
+  735 00000974         
+  736 00000974         lose_life_enemy_down
+  737 00000974 EBFFFFFE        bl               lose_life
+  738 00000978         
+  739 00000978         enemy_done_move_down
+  740 00000978 E8BD4000        LDMFD            sp!, {lr}
+  741 0000097C E12FFF1E        BX               lr
+  742 00000980         
+  743 00000980         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  744 00000980         ;           Input:
+  745 00000980         ;       r0 = enemy_type 
+  746 00000980         ;       r3 = enemy_pose_address
+  747 00000980         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  748 00000980         enemy_moveLeft
+  749 00000980 E92D4000        STMFD            sp!, {lr}
+  750 00000984         
+  751 00000984 E5931000        ldr              r1, [r3]    ; Load current posi
+                                                            tion from enemy_pos
+                                                            e
+  752 00000988 E2411001        sub              r1, r1, #1  ; Get next position
+                                                            
+  753 0000098C E59F44EC        ldr              r4, =board
+  754 00000990 E7D42001        ldrb             r2, [r4, r1] ; Load next positi
+                                                            on char
+  755 00000994 E352003C        cmp              r2, #60     ;<
+  756 00000998 0A00000B        beq              lose_life_enemy_left
+  757 0000099C E352003E        cmp              r2, #62     ;>
+  758 000009A0 0A000009        beq              lose_life_enemy_left
+  759 000009A4 E3520076        cmp              r2, #118    ;v
+  760 000009A8 0A000007        beq              lose_life_enemy_left
+  761 000009AC E352005E        cmp              r2, #94     ;^
+  762 000009B0 0A000005        beq              lose_life_enemy_left
+  763 000009B4         
+  764 000009B4         enemy_update_left
+  765 000009B4 E7C40001        strb             r0, [r4, r1] ; Store enemy type
+                                                             to next position
+
+
+
+ARM Macro Assembler    Page 20 
+
+
+  766 000009B8 E5831000        str              r1, [r3]    ; Update current po
+                                                            sition to next posi
+                                                            tion
+  767 000009BC E3A00020        mov              r0, #32     ; Space, 32
+  768 000009C0 E2811001        add              r1, r1, #1  ; Get current posit
+                                                            ion
+  769 000009C4 E7C40001        strb             r0, [r4, r1] ; Clear current po
+                                                            sition char
+  770 000009C8 EA000000        b                enemy_done_move_left
+  771 000009CC         
+  772 000009CC         lose_life_enemy_left
+  773 000009CC EBFFFFFE        bl               lose_life
+  774 000009D0         
+  775 000009D0         enemy_done_move_left
+  776 000009D0 E8BD4000        LDMFD            sp!, {lr}
+  777 000009D4 E12FFF1E        BX               lr
+  778 000009D8         
+  779 000009D8         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  780 000009D8         ;           Input:
+  781 000009D8         ;       r0 = enemy_type 
+  782 000009D8         ;       r3 = enemy_pose_address
+  783 000009D8         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  784 000009D8         enemy_moveRight
+  785 000009D8 E92D4000        STMFD            sp!, {lr}
+  786 000009DC         
+  787 000009DC E5931000        ldr              r1, [r3]    ; Load current posi
+                                                            tion from enemy_pos
+                                                            e
+  788 000009E0 E2811001        add              r1, r1, #1  ; Get next position
+                                                            
+  789 000009E4 E59F4494        ldr              r4, =board
+  790 000009E8 E7D42001        ldrb             r2, [r4, r1] ; Load next positi
+                                                            on char
+  791 000009EC E352003C        cmp              r2, #60     ;<
+  792 000009F0 0A00000B        beq              lose_life_enemy_right
+  793 000009F4 E352003E        cmp              r2, #62     ;>
+  794 000009F8 0A000009        beq              lose_life_enemy_right
+  795 000009FC E3520076        cmp              r2, #118    ;v
+  796 00000A00 0A000007        beq              lose_life_enemy_right
+  797 00000A04 E352005E        cmp              r2, #94     ;^
+  798 00000A08 0A000005        beq              lose_life_enemy_right
+  799 00000A0C         
+  800 00000A0C         enemy_update_right
+  801 00000A0C E7C40001        strb             r0, [r4, r1] ; Store enemy type
+                                                             to next position
+  802 00000A10 E5831000        str              r1, [r3]    ; Update current po
+                                                            sition to next posi
+                                                            tion
+  803 00000A14 E3A00020        mov              r0, #32     ; Space, 32
+  804 00000A18 E2411001        sub              r1, r1, #1  ; Get current posit
+                                                            ion
+  805 00000A1C E7C40001        strb             r0, [r4, r1] ; Clear current po
+                                                            sition char
+  806 00000A20 EA000000        b                enemy_done_move_right
+  807 00000A24         
+  808 00000A24         lose_life_enemy_right
+  809 00000A24 EBFFFFFE        bl               lose_life
+  810 00000A28         
+  811 00000A28         enemy_done_move_right
+
+
+
+ARM Macro Assembler    Page 21 
+
+
+  812 00000A28 E8BD4000        LDMFD            sp!, {lr}
+  813 00000A2C E12FFF1E        BX               lr
+  814 00000A30         
+  815 00000A30         
+  816 00000A30         FIQ_Handler
+  817 00000A30 E92D5FFF        STMFD            SP!, {r0-r12, lr} 
+                                                            ; Save registers 
+  818 00000A34         
+  819 00000A34         EINT1                                ; Check for EINT1 i
+                                                            nterrupt
+  820 00000A34         
+  821 00000A34         ; TST is used to whether a single bit is set or clear
+  822 00000A34         ; AND a register values with another arithmetic value
+  823 00000A34         ; If there is one in that position of r1, then Zero flag
+                        will be clear after the instruction executes
+  824 00000A34         ; EQ is Zero flag is SET.
+  825 00000A34         ; Zero flag is SET: that bit is 0,
+  826 00000A34         ; Zero flag is Clear: that bit is 1
+  827 00000A34         ; Check External Interrupt Flag Register
+  828 00000A34         
+  829 00000A34 E59F044C        LDR              r0, =0xE01FC140
+  830 00000A38 E5901000        LDR              r1, [r0]
+  831 00000A3C E3110002        TST              r1, #2      ; EINT0 = bit 1, In
+                                                            terrupt Pending = 1
+                                                            
+  832 00000A40 1A00005C        BNE              BTN_Interrupt_handler
+  833 00000A44         
+  834 00000A44 E59F0440        LDR              r0, =0xE000C008
+  835 00000A48 E5901000        LDR              r1, [r0]
+  836 00000A4C E3110001        TST              r1, #1      ; UART0 = bit 0, In
+                                                            terrupt Pending = 0
+                                                            
+  837 00000A50 0A000008        BEQ              UART0_Interrupt_handler
+  838 00000A54         
+  839 00000A54 E59F0434        LDR              r0, =0xE0004000
+  840 00000A58 E5901000        LDR              r1, [r0]
+  841 00000A5C E3110001        TST              r1, #1      ; Timer0 MR0 = bit 
+                                                            0, Interrupt Pendin
+                                                            g = 1
+  842 00000A60 1A000067        BNE              Timer0_Interrupt_handler
+  843 00000A64         ; BEQ FIQ_Exit
+  844 00000A64         ; b Timer0_Interrupt_handler
+  845 00000A64         
+  846 00000A64 E59F0428        LDR              r0, =0xE0008000
+  847 00000A68 E5901000        LDR              r1, [r0]
+  848 00000A6C E3110001        TST              r1, #1      ; Timer0 MR0 = bit 
+                                                            0, Interrupt Pendin
+                                                            g = 1
+  849 00000A70 0A0000EE        BEQ              FIQ_Exit
+  850 00000A74 EA0000CD        b                Timer1_Interrupt_handler
+  851 00000A78         
+  852 00000A78         UART0_Interrupt_handler
+  853 00000A78 E92D5FFF        STMFD            SP!, {r0-r12, lr} 
+                                                            ; Save registers 
+  854 00000A7C         
+  855 00000A7C         ; Clear automatically when data is read
+  856 00000A7C EBFFFFFE        bl               read_character
+  857 00000A80 E1A09000        mov              r9, r0
+  858 00000A84         
+
+
+
+ARM Macro Assembler    Page 22 
+
+
+  859 00000A84 E3500071        cmp              r0, #113    ; q
+  860 00000A88 0AFFFE5A        beq              Exit_Program
+  861 00000A8C E350000D        cmp              r0, #13     ; Enter key
+  862 00000A90 0A000019        beq              start_game
+  863 00000A94         
+  864 00000A94 E59F43A4        ldr              r4, =start_state
+  865 00000A98 E5940000        ldr              r0, [r4]
+  866 00000A9C E3500001        cmp              r0, #1      ; 0 is game pending
+                                                             to start, 1 is sta
+                                                            rt the game
+  867 00000AA0 1A0000D3        bne              UART0_Interrupt_Exit ; r0 = 0, 
+                                                            then Exit UART0
+  868 00000AA4         
+  869 00000AA4 E59F4398        ldr              r4, =pause_state
+  870 00000AA8 E5940000        ldr              r0, [r4]
+  871 00000AAC E3500001        cmp              r0, #1      ; 0 is game pending
+                                                             to pause, 1 is pau
+                                                            se the game
+  872 00000AB0 0A0000CF        beq              UART0_Interrupt_Exit ; r0 = 1, 
+                                                            then Exit UART0
+  873 00000AB4         
+  874 00000AB4 E1A00009        mov              r0, r9
+  875 00000AB8 E3500020        cmp              r0, #32     ; Space
+  876 00000ABC 0A000030        beq              shot_air_pump
+  877 00000AC0         
+  878 00000AC0 E59F43D0        ldr              r4, =player_movement
+  879 00000AC4 E5941000        ldr              r1, [r4]
+  880 00000AC8 E3510001        cmp              r1, #1
+  881 00000ACC 0A0000C8        beq              UART0_Interrupt_Exit
+  882 00000AD0         
+  883 00000AD0 E3A01001        mov              r1, #1
+  884 00000AD4 E5841000        str              r1, [r4]
+  885 00000AD8         
+  886 00000AD8 E3500077        cmp              r0, #119    ; w
+  887 00000ADC 0A00002D        beq              move_up_UART
+  888 00000AE0 E3500073        cmp              r0, #115    ; s
+  889 00000AE4 0A00002D        beq              move_down_UART
+  890 00000AE8 E3500061        cmp              r0, #97     ; a
+  891 00000AEC 0A00002D        beq              move_left_UART
+  892 00000AF0 E3500064        cmp              r0, #100    ; d
+  893 00000AF4 0A00002D        beq              move_right_UART
+  894 00000AF8         
+  895 00000AF8 EA0000BD        b                UART0_Interrupt_Exit
+  896 00000AFC         
+  897 00000AFC         start_game
+  898 00000AFC E59F433C        ldr              r4, =start_state ; 0 is game pe
+                                                            nding to start, 1 i
+                                                            s start the game
+  899 00000B00 E5940000        ldr              r0, [r4]
+  900 00000B04 E3500001        cmp              r0, #1
+  901 00000B08 0A0000B9        beq              UART0_Interrupt_Exit
+  902 00000B0C         
+  903 00000B0C E3A00001        mov              r0, #1
+  904 00000B10 E5840000        str              r0, [r4]
+  905 00000B14         
+  906 00000B14         ; Initialize points to 0
+  907 00000B14 E3A00000        mov              r0, #0
+  908 00000B18 E59F432C        ldr              r4, =point
+  909 00000B1C E5840000        str              r0, [r4]
+
+
+
+ARM Macro Assembler    Page 23 
+
+
+  910 00000B20         
+  911 00000B20         ; Initialize Time value to 0
+  912 00000B20 E3A00000        mov              r0, #0
+  913 00000B24 E59F4324        ldr              r4, =time_value
+  914 00000B28 E5840000        str              r0, [r4]
+  915 00000B2C         
+  916 00000B2C E3A00000        mov              r0, #0
+  917 00000B30         
+  918 00000B30 E59F4360        ldr              r4, =player_movement
+  919 00000B34 E5840000        str              r0, [r4]
+  920 00000B38         
+  921 00000B38         ; Set new_level_flag to 0
+  922 00000B38 E59F435C        ldr              r4, =new_level_flag
+  923 00000B3C E5840000        str              r0, [r4]
+  924 00000B40         
+  925 00000B40         ; Set slow_enemy_flag to 0
+  926 00000B40 E59F4358        ldr              r4, =slow_enemy_flag
+  927 00000B44 E5840000        str              r0, [r4]
+  928 00000B48         
+  929 00000B48         ; Start with level 1
+  930 00000B48 E59F4354        ldr              r4, =level
+  931 00000B4C E3A00001        mov              r0, #1
+  932 00000B50 E5840000        str              r0, [r4]
+  933 00000B54         
+  934 00000B54         ; Display on Seven Segment
+  935 00000B54 EBFFFFFE        bl               display_digit_on_7_seg
+  936 00000B58         
+  937 00000B58 E3A00004        mov              r0, #4
+  938 00000B5C E59F4344        ldr              r4, =player_lives
+  939 00000B60 E5840000        str              r0, [r4]
+  940 00000B64         
+  941 00000B64         ; Display F on LED
+  942 00000B64 EBFFFFFE        bl               illuminateLiveLEDs
+  943 00000B68         
+  944 00000B68         ; Display Green on RGB_LED
+  945 00000B68 E3A00033        mov              r0, #51
+  946 00000B6C EBFFFFFE        bl               Illuminate_RGB_LED
+  947 00000B70         
+  948 00000B70 EBFFFFFE        bl               initial_player
+  949 00000B74 EBFFFFFE        bl               initial_enemy
+  950 00000B78         
+  951 00000B78 E59F4300        ldr              r4, =board
+  952 00000B7C EBFFFFFE        bl               output_string
+  953 00000B80         
+  954 00000B80 EA00009D        b                UART0_Interrupt_Reset_Timer_Exi
+t
+  955 00000B84         
+  956 00000B84         shot_air_pump
+  957 00000B84 E3A00031        mov              r0, #49
+  958 00000B88 EBFFFFFE        bl               Illuminate_RGB_LED
+  959 00000B8C         
+  960 00000B8C EBFFFFFE        bl               air_pump
+  961 00000B90 EBFFFFFE        bl               air_pump_clear
+  962 00000B94 EA000096        b                UART0_Interrupt_Exit
+  963 00000B98         
+  964 00000B98         move_up_UART
+  965 00000B98 EBFFFFFE        bl               move_up
+  966 00000B9C EA000094        b                UART0_Interrupt_Exit
+  967 00000BA0         
+
+
+
+ARM Macro Assembler    Page 24 
+
+
+  968 00000BA0         move_down_UART
+  969 00000BA0 EBFFFFFE        bl               move_down
+  970 00000BA4 EA000092        b                UART0_Interrupt_Exit
+  971 00000BA8         
+  972 00000BA8         move_left_UART
+  973 00000BA8 EBFFFFFE        bl               move_left
+  974 00000BAC EA000090        b                UART0_Interrupt_Exit
+  975 00000BB0         
+  976 00000BB0         move_right_UART
+  977 00000BB0 EBFFFFFE        bl               move_right
+  978 00000BB4 EA00008E        b                UART0_Interrupt_Exit
+  979 00000BB8         
+  980 00000BB8         
+  981 00000BB8         ;***************************************
+  982 00000BB8         ;            BTN Interrupt
+  983 00000BB8         ;***************************************
+  984 00000BB8         BTN_Interrupt_handler
+  985 00000BB8 E92D5FFF        STMFD            SP!, {r0-r12, lr} 
+                                                            ; Save registers 
+  986 00000BBC         
+  987 00000BBC E59F427C        ldr              r4, =start_state
+  988 00000BC0 E5940000        ldr              r0, [r4]
+  989 00000BC4 E3500001        cmp              r0, #1      ; 0 is game pending
+                                                             to pause, 1 is sta
+                                                            rt the game
+  990 00000BC8 1A000085        bne              BTN_Interrupt_Exit
+  991 00000BCC         
+  992 00000BCC E59F4270        ldr              r4, =pause_state ; 0 is game pe
+                                                            nding to pause, 1 i
+                                                            s pause the game
+  993 00000BD0 E5940000        ldr              r0, [r4]
+  994 00000BD4 E3500000        cmp              r0, #0
+  995 00000BD8 0A000004        beq              pause_now
+  996 00000BDC         
+  997 00000BDC E3A00000        mov              r0, #0      ; Set to pending to
+                                                             pause
+  998 00000BE0 E5840000        str              r0, [r4]
+  999 00000BE4         
+ 1000 00000BE4         ; Set RGB LED to Green
+ 1001 00000BE4 E3A00033        mov              r0, #51     ; 3
+ 1002 00000BE8 EBFFFFFE        bl               Illuminate_RGB_LED
+ 1003 00000BEC EA00007C        b                BTN_Interrupt_Exit
+ 1004 00000BF0         
+ 1005 00000BF0         pause_now
+ 1006 00000BF0 E3A00001        mov              r0, #1      ; Set to pause mode
+                                                            
+ 1007 00000BF4 E5840000        str              r0, [r4]
+ 1008 00000BF8         
+ 1009 00000BF8         ; Set RGB LED to Blue
+ 1010 00000BF8 E3A00032        mov              r0, #50     ; 2
+ 1011 00000BFC EBFFFFFE        bl               Illuminate_RGB_LED
+ 1012 00000C00 EA000077        b                BTN_Interrupt_Exit
+ 1013 00000C04         
+ 1014 00000C04         Timer0_Interrupt_handler
+ 1015 00000C04 E92D5FFF        STMFD            SP!, {r0-r12, lr} 
+                                                            ; Save registers
+ 1016 00000C08         
+ 1017 00000C08 E59F4230        ldr              r4, =start_state
+ 1018 00000C0C E5940000        ldr              r0, [r4]
+
+
+
+ARM Macro Assembler    Page 25 
+
+
+ 1019 00000C10 E3500001        cmp              r0, #1      ; 0 is game pending
+                                                             to pause, 1 is sta
+                                                            rt the game
+ 1020 00000C14 1A00007A        bne              Timer0_Interrupt_Exit
+ 1021 00000C18         
+ 1022 00000C18 E59F4224        ldr              r4, =pause_state ; 0 is game pe
+                                                            nding to pause, 1 i
+                                                            s pause the game
+ 1023 00000C1C E5940000        ldr              r0, [r4]
+ 1024 00000C20 E3500001        cmp              r0, #1
+ 1025 00000C24 0A000076        beq              Timer0_Interrupt_Exit
+ 1026 00000C28         
+ 1027 00000C28 E3A00000        mov              r0, #0
+ 1028 00000C2C E59F4264        ldr              r4, =player_movement
+ 1029 00000C30 E5840000        str              r0, [r4]
+ 1030 00000C34         
+ 1031 00000C34 E59F4260        ldr              r4, =new_level_flag ; 0 is same
+                                                             level as before, 1
+                                                             is starting new le
+                                                            vel
+ 1032 00000C38 E5940000        ldr              r0, [r4]
+ 1033 00000C3C E3500001        cmp              r0, #1
+ 1034 00000C40 1A000012        bne              enemy_move
+ 1035 00000C44         
+ 1036 00000C44 E3A00000        mov              r0, #0
+ 1037 00000C48 E5840000        str              r0, [r4]    ; Set new level fla
+                                                            g to same level
+ 1038 00000C4C         
+ 1039 00000C4C E59F4250        ldr              r4, =level  ; Current level
+ 1040 00000C50 E5940000        ldr              r0, [r4]
+ 1041 00000C54 E3500005        cmp              r0, #5
+ 1042 00000C58 CA00000C        bgt              enemy_move  ; If level is above
+                                                             5, the speed of ga
+                                                            me will stay at 0.1
+                                                             second.
+ 1043 00000C5C         
+ 1044 00000C5C E59F4248        ldr              r4, =Period_SET
+ 1045 00000C60 E1A00100        mov              r0, r0, lsl #2 ; Logical shift 
+                                                            left 2 bits to get 
+                                                            next address on Per
+                                                            iod Set,
+ 1046 00000C64 E7941000        ldr              r1, [r4, r0] ; Load time period
+                                                             from Period Set
+ 1047 00000C68 E59F4240        ldr              r4, =T0MR0
+ 1048 00000C6C E5841000        str              r1, [r4]    ; Store time period
+                                                             to match register
+ 1049 00000C70 EA000047        b                done_enemy_move
+ 1050 00000C74         
+ 1051 00000C74 E59F4238        ldr              r4, =enemyMove_flag ; Set enemy
+                                                            Move flag to 0, 0 i
+                                                            s able to move
+ 1052 00000C78 E5940000        ldr              r0, [r4]
+ 1053 00000C7C E3500000        cmp              r0, #0
+ 1054 00000C80 0A000002        beq              enemy_move
+ 1055 00000C84         
+ 1056 00000C84 E3A00000        mov              r0, #0
+ 1057 00000C88 E5840000        str              r0, [r4]
+ 1058 00000C8C EA000040        b                done_enemy_move
+ 1059 00000C90         
+
+
+
+ARM Macro Assembler    Page 26 
+
+
+ 1060 00000C90         enemy_move
+ 1061 00000C90         ;; move B first
+ 1062 00000C90         
+ 1063 00000C90 E59F4220        ldr              r4, =enemyB_live
+ 1064 00000C94 E5940000        ldr              r0, [r4]
+ 1065 00000C98 E3500000        cmp              r0, #0      ; 0, died
+ 1066 00000C9C 0A000009        beq              done_move_B
+ 1067 00000CA0         
+ 1068 00000CA0 E59F31BC        ldr              r3, =enemyB_type
+ 1069 00000CA4 E5930000        ldr              r0, [r3]    ; Load enemy type t
+                                                            o r0
+ 1070 00000CA8 E59F31B0        ldr              r3, =enemyB_curPos
+ 1071 00000CAC E5931000        ldr              r1, [r3]
+ 1072 00000CB0 E59F4204        ldr              r4, =enemyB_dir
+ 1073 00000CB4 E5942000        ldr              r2, [r4]
+ 1074 00000CB8 EBFFFE39        bl               enemy_direction
+ 1075 00000CBC         
+ 1076 00000CBC E59F41F8        ldr              r4, =enemyB_dir
+ 1077 00000CC0 E5841000        str              r1, [r4]
+ 1078 00000CC4 EBFFFEEE        bl               enemy_dirChoice
+ 1079 00000CC8         
+ 1080 00000CC8         done_move_B
+ 1081 00000CC8         
+ 1082 00000CC8         ; Start Move Emeny_X
+ 1083 00000CC8 E59F41D0        ldr              r4, =slow_enemy_flag ; 0 is mov
+                                                            e slow type enemy, 
+                                                            1 is skip move slow
+                                                             type enemy
+ 1084 00000CCC E5940000        ldr              r0, [r4]
+ 1085 00000CD0 E3500001        cmp              r0, #1
+ 1086 00000CD4 0A00002C        beq              skip_move_slow_enemy
+ 1087 00000CD8         
+ 1088 00000CD8 E3A00001        mov              r0, #1      ; Set flag to 1 and
+                                                             stop move slow typ
+                                                            e enemy next round
+ 1089 00000CDC E5840000        str              r0, [r4]
+ 1090 00000CE0         
+ 1091 00000CE0 E59F41CC        ldr              r4, =enemyMove_flag ; Set enemy
+                                                            Move flag to 0, 0 i
+                                                            s able to move
+ 1092 00000CE4 E5940000        ldr              r0, [r4]
+ 1093 00000CE8 E3500000        cmp              r0, #0
+ 1094 00000CEC 0A000002        beq              move_EnemyX1
+ 1095 00000CF0         
+ 1096 00000CF0 E3A00000        mov              r0, #0
+ 1097 00000CF4 E5840000        str              r0, [r4]
+ 1098 00000CF8 EA000025        b                done_enemy_move
+ 1099 00000CFC         
+ 1100 00000CFC         move_EnemyX1
+ 1101 00000CFC         ; Move Enemy_X1
+ 1102 00000CFC E59F41BC        ldr              r4, =enemyX1_live
+ 1103 00000D00 E5940000        ldr              r0, [r4]
+ 1104 00000D04 E3500000        cmp              r0, #0
+ 1105 00000D08 0A000010        beq              move_EnemyX2
+ 1106 00000D0C         
+ 1107 00000D0C E59F315C        ldr              r3, =enemyX1_type
+ 1108 00000D10 E5930000        ldr              r0, [r3]    ; Load enemy type t
+                                                            o r0
+ 1109 00000D14 E59F3150        ldr              r3, =enemyX1_curPos
+
+
+
+ARM Macro Assembler    Page 27 
+
+
+ 1110 00000D18 E5931000        ldr              r1, [r3]
+ 1111 00000D1C E59F41A0        ldr              r4, =enemyX1_dir
+ 1112 00000D20 E5942000        ldr              r2, [r4]
+ 1113 00000D24 EBFFFE1E        bl               enemy_direction
+ 1114 00000D28         
+ 1115 00000D28 E59F4194        ldr              r4, =enemyX1_dir
+ 1116 00000D2C E5841000        str              r1, [r4]
+ 1117 00000D30 EBFFFED3        bl               enemy_dirChoice
+ 1118 00000D34         
+ 1119 00000D34 E59F4178        ldr              r4, =enemyMove_flag ; Set enemy
+                                                            Move flag to 0, 0 i
+                                                            s able to move
+ 1120 00000D38 E5940000        ldr              r0, [r4]
+ 1121 00000D3C E3500000        cmp              r0, #0
+ 1122 00000D40 0A000002        beq              move_EnemyX2
+ 1123 00000D44         
+ 1124 00000D44 E3A00000        mov              r0, #0
+ 1125 00000D48 E5840000        str              r0, [r4]
+ 1126 00000D4C EA000010        b                done_enemy_move
+ 1127 00000D50         
+ 1128 00000D50         move_EnemyX2
+ 1129 00000D50         ; Move Enemy_X2
+ 1130 00000D50 E59F4170        ldr              r4, =enemyX2_live
+ 1131 00000D54 E5940000        ldr              r0, [r4]
+ 1132 00000D58 E3500000        cmp              r0, #0
+ 1133 00000D5C 0A00000C        beq              done_enemy_move
+ 1134 00000D60         
+ 1135 00000D60 E59F3114        ldr              r3, =enemyX2_type
+ 1136 00000D64 E5930000        ldr              r0, [r3]    ; Load enemy type t
+                                                            o r0
+ 1137 00000D68 E59F3108        ldr              r3, =enemyX2_curPos
+ 1138 00000D6C E5931000        ldr              r1, [r3]
+ 1139 00000D70 E59F414C        ldr              r4, =enemyX1_dir
+ 1140 00000D74 E5942000        ldr              r2, [r4]
+ 1141 00000D78 EBFFFE09        bl               enemy_direction
+ 1142 00000D7C         
+ 1143 00000D7C E59F4148        ldr              r4, =enemyX2_dir
+ 1144 00000D80 E5841000        str              r1, [r4]
+ 1145 00000D84 EBFFFEBE        bl               enemy_dirChoice
+ 1146 00000D88 EA000001        b                done_enemy_move
+ 1147 00000D8C         
+ 1148 00000D8C         skip_move_slow_enemy
+ 1149 00000D8C E3A00000        mov              r0, #0      ; Set flag to 0 and
+                                                             move slow type ene
+                                                            my next round
+ 1150 00000D90 E5840000        str              r0, [r4]
+ 1151 00000D94         
+ 1152 00000D94         done_enemy_move
+ 1153 00000D94         ; Print board
+ 1154 00000D94 E59F40AC        ldr              r4, =game_over
+ 1155 00000D98 E5940000        ldr              r0, [r4]
+ 1156 00000D9C E3500001        cmp              r0, #1
+ 1157 00000DA0 0A000001        beq              finish_enemy_move
+ 1158 00000DA4         
+ 1159 00000DA4 E59F40D4        ldr              r4, =board
+ 1160 00000DA8 EBFFFFFE        bl               output_string
+ 1161 00000DAC         finish_enemy_move
+ 1162 00000DAC EA000014        b                Timer0_Interrupt_Exit
+ 1163 00000DB0         
+
+
+
+ARM Macro Assembler    Page 28 
+
+
+ 1164 00000DB0         
+ 1165 00000DB0         
+ 1166 00000DB0         ;***********************************
+ 1167 00000DB0         ;     End Process
+ 1168 00000DB0         ;***********************************   
+ 1169 00000DB0         Timer1_Interrupt_handler
+ 1170 00000DB0 E92D5FFF        STMFD            SP!, {r0-r12, lr} 
+                                                            ; Save registers
+ 1171 00000DB4         
+ 1172 00000DB4 E59F4084        ldr              r4, =start_state
+ 1173 00000DB8 E5940000        ldr              r0, [r4]
+ 1174 00000DBC E3500001        cmp              r0, #1      ; 0 is game pending
+                                                             to pause, 1 is sta
+                                                            rt the game
+ 1175 00000DC0 1A000015        bne              Timer1_Interrupt_Exit
+ 1176 00000DC4         
+ 1177 00000DC4 E59F4078        ldr              r4, =pause_state ; 0 is game pe
+                                                            nding to pause, 1 i
+                                                            s pause the game
+ 1178 00000DC8 E5940000        ldr              r0, [r4]
+ 1179 00000DCC E3500001        cmp              r0, #1
+ 1180 00000DD0 0A000011        beq              Timer1_Interrupt_Exit
+ 1181 00000DD4         
+ 1182 00000DD4 E3A00033        mov              r0, #51
+ 1183 00000DD8 EBFFFFFE        bl               Illuminate_RGB_LED
+ 1184 00000DDC         
+ 1185 00000DDC EBFFFFFE        bl               update_time
+ 1186 00000DE0         
+ 1187 00000DE0 EA00000D        b                Timer1_Interrupt_Exit
+ 1188 00000DE4         
+ 1189 00000DE4         BTN_Interrupt_Exit
+ 1190 00000DE4 E8BD5FFF        LDMFD            SP!, {r0-r12, lr} 
+                                                            ; Restore registers
+                                                            
+ 1191 00000DE8         ; Need Clear Interrupt
+ 1192 00000DE8 E3811002        ORR              r1, r1, #2  ; Clear Interrupt
+ 1193 00000DEC E5801000        STR              r1, [r0]
+ 1194 00000DF0         ; need to reset Timer0 Counter to 0
+ 1195 00000DF0 EA00000E        b                FIQ_Exit
+ 1196 00000DF4         
+ 1197 00000DF4         UART0_Interrupt_Exit
+ 1198 00000DF4 E8BD5FFF        LDMFD            SP!, {r0-r12, lr} 
+                                                            ; Restore registers
+                                                            
+ 1199 00000DF8 EA00000C        b                FIQ_Exit
+ 1200 00000DFC         
+ 1201 00000DFC         UART0_Interrupt_Reset_Timer_Exit
+ 1202 00000DFC E8BD5FFF        LDMFD            SP!, {r0-r12, lr} 
+                                                            ; Restore registers
+                                                            
+ 1203 00000E00 EA00000A        b                FIQ_Exit
+ 1204 00000E04         
+ 1205 00000E04         Timer0_Interrupt_Exit
+ 1206 00000E04 E8BD5FFF        LDMFD            SP!, {r0-r12, lr} 
+                                                            ; Restore registers
+                                                            
+ 1207 00000E08 E59F4080        LDR              r4, =0xE0004000
+ 1208 00000E0C E5940000        LDR              r0, [r4]
+ 1209 00000E10 E3800001        ORR              r0, r0, #1  ; Clear Match Regis
+
+
+
+ARM Macro Assembler    Page 29 
+
+
+                                                            ter 0 interrupt: Bi
+                                                            t = 0, clear = 1
+ 1210 00000E14 E5840000        STR              r0, [r4]
+ 1211 00000E18 EA000004        b                FIQ_Exit
+ 1212 00000E1C         
+ 1213 00000E1C         Timer1_Interrupt_Exit
+ 1214 00000E1C E8BD5FFF        LDMFD            SP!, {r0-r12, lr} 
+                                                            ; Restore registers
+                                                            
+ 1215 00000E20 E59F406C        LDR              r4, =0xE0008000
+ 1216 00000E24 E5940000        LDR              r0, [r4]
+ 1217 00000E28 E3800001        ORR              r0, r0, #1  ; Clear Match Regis
+                                                            ter 0 interrupt: Bi
+                                                            t = 0, clear = 1
+ 1218 00000E2C E5840000        STR              r0, [r4]
+ 1219 00000E30         
+ 1220 00000E30         FIQ_Exit
+ 1221 00000E30 E8BD5FFF        LDMFD            SP!, {r0-r12, lr}
+ 1222 00000E34 E25EF004        SUBS             pc, lr, #4
+ 1223 00000E38         
+ 1224 00000E38                 END
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              E01FC140 
+              E000C008 
+              E0004000 
+              E0008000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              E0004018 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+
+
+
+ARM Macro Assembler    Page 30 
+
+
+Command Line: --debug --xref --diag_suppress=9931 --apcs=interwork --depend=.\o
+bjects\lab7.d -o.\objects\lab7.o -ID:\ARM\RV31\INC -ID:\ARM\CMSIS\Include -ID:\
+ARM\Inc\Philips --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA
+ 522" --list=.\listings\lab7.lst lab7.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+BTN_Interrupt_Exit 00000DE4
+
+Symbol: BTN_Interrupt_Exit
+   Definitions
+      At line 1189 in file lab7.s
+   Uses
+      At line 990 in file lab7.s
+      At line 1003 in file lab7.s
+      At line 1012 in file lab7.s
+
+BTN_Interrupt_handler 00000BB8
+
+Symbol: BTN_Interrupt_handler
+   Definitions
+      At line 984 in file lab7.s
+   Uses
+      At line 832 in file lab7.s
+Comment: BTN_Interrupt_handler used once
+EINT1 00000A34
+
+Symbol: EINT1
+   Definitions
+      At line 819 in file lab7.s
+   Uses
+      None
+Comment: EINT1 unused
+Exit_Program 000003F8
+
+Symbol: Exit_Program
+   Definitions
+      At line 189 in file lab7.s
+   Uses
+      At line 860 in file lab7.s
+Comment: Exit_Program used once
+FIQ_Exit 00000E30
+
+Symbol: FIQ_Exit
+   Definitions
+      At line 1220 in file lab7.s
+   Uses
+      At line 849 in file lab7.s
+      At line 1195 in file lab7.s
+      At line 1199 in file lab7.s
+      At line 1203 in file lab7.s
+      At line 1211 in file lab7.s
+
+FIQ_Handler 00000A30
+
+Symbol: FIQ_Handler
+   Definitions
+      At line 816 in file lab7.s
+   Uses
+      At line 3 in file lab7.s
+Comment: FIQ_Handler used once
+Timer0_Interrupt_Exit 00000E04
+
+Symbol: Timer0_Interrupt_Exit
+   Definitions
+      At line 1205 in file lab7.s
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Relocatable symbols
+
+   Uses
+      At line 1020 in file lab7.s
+      At line 1025 in file lab7.s
+      At line 1162 in file lab7.s
+
+Timer0_Interrupt_handler 00000C04
+
+Symbol: Timer0_Interrupt_handler
+   Definitions
+      At line 1014 in file lab7.s
+   Uses
+      At line 842 in file lab7.s
+Comment: Timer0_Interrupt_handler used once
+Timer1_Interrupt_Exit 00000E1C
+
+Symbol: Timer1_Interrupt_Exit
+   Definitions
+      At line 1213 in file lab7.s
+   Uses
+      At line 1175 in file lab7.s
+      At line 1180 in file lab7.s
+      At line 1187 in file lab7.s
+
+Timer1_Interrupt_handler 00000DB0
+
+Symbol: Timer1_Interrupt_handler
+   Definitions
+      At line 1169 in file lab7.s
+   Uses
+      At line 850 in file lab7.s
+Comment: Timer1_Interrupt_handler used once
+UART0_Interrupt_Exit 00000DF4
+
+Symbol: UART0_Interrupt_Exit
+   Definitions
+      At line 1197 in file lab7.s
+   Uses
+      At line 867 in file lab7.s
+      At line 872 in file lab7.s
+      At line 881 in file lab7.s
+      At line 895 in file lab7.s
+      At line 901 in file lab7.s
+      At line 962 in file lab7.s
+      At line 966 in file lab7.s
+      At line 970 in file lab7.s
+      At line 974 in file lab7.s
+      At line 978 in file lab7.s
+
+UART0_Interrupt_Reset_Timer_Exit 00000DFC
+
+Symbol: UART0_Interrupt_Reset_Timer_Exit
+   Definitions
+      At line 1201 in file lab7.s
+   Uses
+      At line 954 in file lab7.s
+Comment: UART0_Interrupt_Reset_Timer_Exit used once
+UART0_Interrupt_handler 00000A78
+
+Symbol: UART0_Interrupt_handler
+
+
+
+ARM Macro Assembler    Page 3 Alphabetic symbol ordering
+Relocatable symbols
+
+   Definitions
+      At line 852 in file lab7.s
+   Uses
+      At line 837 in file lab7.s
+Comment: UART0_Interrupt_handler used once
+checkDown 00000724
+
+Symbol: checkDown
+   Definitions
+      At line 490 in file lab7.s
+   Uses
+      At line 389 in file lab7.s
+      At line 404 in file lab7.s
+      At line 430 in file lab7.s
+      At line 450 in file lab7.s
+
+checkDown_done 0000074C
+
+Symbol: checkDown_done
+   Definitions
+      At line 503 in file lab7.s
+   Uses
+      At line 495 in file lab7.s
+      At line 497 in file lab7.s
+
+checkLeft 00000754
+
+Symbol: checkLeft
+   Definitions
+      At line 508 in file lab7.s
+   Uses
+      At line 390 in file lab7.s
+      At line 410 in file lab7.s
+      At line 424 in file lab7.s
+      At line 451 in file lab7.s
+
+checkLeft_done 0000077C
+
+Symbol: checkLeft_done
+   Definitions
+      At line 521 in file lab7.s
+   Uses
+      At line 513 in file lab7.s
+      At line 515 in file lab7.s
+
+checkRight 00000784
+
+Symbol: checkRight
+   Definitions
+      At line 526 in file lab7.s
+   Uses
+      At line 391 in file lab7.s
+      At line 411 in file lab7.s
+      At line 431 in file lab7.s
+      At line 444 in file lab7.s
+
+checkRight_done 000007AC
+
+Symbol: checkRight_done
+
+
+
+ARM Macro Assembler    Page 4 Alphabetic symbol ordering
+Relocatable symbols
+
+   Definitions
+      At line 539 in file lab7.s
+   Uses
+      At line 531 in file lab7.s
+      At line 533 in file lab7.s
+
+checkUp 000006EC
+
+Symbol: checkUp
+   Definitions
+      At line 470 in file lab7.s
+   Uses
+      At line 384 in file lab7.s
+      At line 409 in file lab7.s
+      At line 429 in file lab7.s
+      At line 449 in file lab7.s
+
+checkUp_done 0000071C
+
+Symbol: checkUp_done
+   Definitions
+      At line 485 in file lab7.s
+   Uses
+      At line 474 in file lab7.s
+      At line 477 in file lab7.s
+      At line 479 in file lab7.s
+
+check_down 0000052C
+
+Symbol: check_down
+   Definitions
+      At line 310 in file lab7.s
+   Uses
+      None
+Comment: check_down unused
+check_down_pos 00000618
+
+Symbol: check_down_pos
+   Definitions
+      At line 403 in file lab7.s
+   Uses
+      At line 377 in file lab7.s
+Comment: check_down_pos used once
+check_left 000004D8
+
+Symbol: check_left
+   Definitions
+      At line 283 in file lab7.s
+   Uses
+      At line 277 in file lab7.s
+Comment: check_left used once
+check_left_pos 0000065C
+
+Symbol: check_left_pos
+   Definitions
+      At line 423 in file lab7.s
+   Uses
+      At line 379 in file lab7.s
+Comment: check_left_pos used once
+
+
+
+ARM Macro Assembler    Page 5 Alphabetic symbol ordering
+Relocatable symbols
+
+check_right 000004EC
+
+Symbol: check_right
+   Definitions
+      At line 290 in file lab7.s
+   Uses
+      None
+Comment: check_right unused
+check_right_pos 000006A0
+
+Symbol: check_right_pos
+   Definitions
+      At line 443 in file lab7.s
+   Uses
+      At line 381 in file lab7.s
+Comment: check_right_pos used once
+check_two_dir 000007E4
+
+Symbol: check_two_dir
+   Definitions
+      At line 566 in file lab7.s
+   Uses
+      At line 461 in file lab7.s
+Comment: check_two_dir used once
+check_up 00000500
+
+Symbol: check_up
+   Definitions
+      At line 297 in file lab7.s
+   Uses
+      None
+Comment: check_up unused
+check_up_pos 000005D4
+
+Symbol: check_up_pos
+   Definitions
+      At line 383 in file lab7.s
+   Uses
+      At line 375 in file lab7.s
+Comment: check_up_pos used once
+choose_again 000005AC
+
+Symbol: choose_again
+   Definitions
+      At line 370 in file lab7.s
+   Uses
+      None
+Comment: choose_again unused
+current_char 00000340
+
+Symbol: current_char
+   Definitions
+      At line 86 in file lab7.s
+   Uses
+      At line 19 in file lab7.s
+Comment: current_char used once
+current_dir 00000344
+
+Symbol: current_dir
+
+
+
+ARM Macro Assembler    Page 6 Alphabetic symbol ordering
+Relocatable symbols
+
+   Definitions
+      At line 90 in file lab7.s
+   Uses
+      At line 18 in file lab7.s
+Comment: current_dir used once
+current_pose 00000348
+
+Symbol: current_pose
+   Definitions
+      At line 93 in file lab7.s
+   Uses
+      At line 20 in file lab7.s
+Comment: current_pose used once
+done_check_two 0000087C
+
+Symbol: done_check_two
+   Definitions
+      At line 628 in file lab7.s
+   Uses
+      At line 573 in file lab7.s
+      At line 580 in file lab7.s
+      At line 582 in file lab7.s
+      At line 589 in file lab7.s
+      At line 591 in file lab7.s
+      At line 600 in file lab7.s
+      At line 609 in file lab7.s
+      At line 618 in file lab7.s
+      At line 622 in file lab7.s
+      At line 626 in file lab7.s
+
+done_choose 000008C8
+
+Symbol: done_choose
+   Definitions
+      At line 665 in file lab7.s
+   Uses
+      At line 651 in file lab7.s
+      At line 655 in file lab7.s
+      At line 659 in file lab7.s
+      At line 663 in file lab7.s
+
+done_enemy_move 00000D94
+
+Symbol: done_enemy_move
+   Definitions
+      At line 1152 in file lab7.s
+   Uses
+      At line 1049 in file lab7.s
+      At line 1058 in file lab7.s
+      At line 1098 in file lab7.s
+      At line 1126 in file lab7.s
+      At line 1133 in file lab7.s
+      At line 1146 in file lab7.s
+
+done_enemy_pos 00000498
+
+Symbol: done_enemy_pos
+   Definitions
+      At line 252 in file lab7.s
+
+
+
+ARM Macro Assembler    Page 7 Alphabetic symbol ordering
+Relocatable symbols
+
+   Uses
+      At line 225 in file lab7.s
+      At line 239 in file lab7.s
+
+done_move_B 00000CC8
+
+Symbol: done_move_B
+   Definitions
+      At line 1080 in file lab7.s
+   Uses
+      At line 1066 in file lab7.s
+Comment: done_move_B used once
+enemy_dirChoice 00000884
+
+Symbol: enemy_dirChoice
+   Definitions
+      At line 637 in file lab7.s
+   Uses
+      At line 1078 in file lab7.s
+      At line 1117 in file lab7.s
+      At line 1145 in file lab7.s
+
+enemy_direction 000005A4
+
+Symbol: enemy_direction
+   Definitions
+      At line 365 in file lab7.s
+   Uses
+      At line 1074 in file lab7.s
+      At line 1113 in file lab7.s
+      At line 1141 in file lab7.s
+
+enemy_done_move_down 00000978
+
+Symbol: enemy_done_move_down
+   Definitions
+      At line 739 in file lab7.s
+   Uses
+      At line 734 in file lab7.s
+Comment: enemy_done_move_down used once
+enemy_done_move_left 000009D0
+
+Symbol: enemy_done_move_left
+   Definitions
+      At line 775 in file lab7.s
+   Uses
+      At line 770 in file lab7.s
+Comment: enemy_done_move_left used once
+enemy_done_move_right 00000A28
+
+Symbol: enemy_done_move_right
+   Definitions
+      At line 811 in file lab7.s
+   Uses
+      At line 806 in file lab7.s
+Comment: enemy_done_move_right used once
+enemy_done_move_up 00000920
+
+Symbol: enemy_done_move_up
+
+
+
+ARM Macro Assembler    Page 8 Alphabetic symbol ordering
+Relocatable symbols
+
+   Definitions
+      At line 702 in file lab7.s
+   Uses
+      At line 697 in file lab7.s
+Comment: enemy_done_move_up used once
+enemy_move 00000C90
+
+Symbol: enemy_move
+   Definitions
+      At line 1060 in file lab7.s
+   Uses
+      At line 1034 in file lab7.s
+      At line 1042 in file lab7.s
+      At line 1054 in file lab7.s
+
+enemy_moveDown 00000928
+
+Symbol: enemy_moveDown
+   Definitions
+      At line 712 in file lab7.s
+   Uses
+      At line 654 in file lab7.s
+Comment: enemy_moveDown used once
+enemy_moveLeft 00000980
+
+Symbol: enemy_moveLeft
+   Definitions
+      At line 748 in file lab7.s
+   Uses
+      At line 658 in file lab7.s
+Comment: enemy_moveLeft used once
+enemy_moveRight 000009D8
+
+Symbol: enemy_moveRight
+   Definitions
+      At line 784 in file lab7.s
+   Uses
+      At line 662 in file lab7.s
+Comment: enemy_moveRight used once
+enemy_moveUp 000008D0
+
+Symbol: enemy_moveUp
+   Definitions
+      At line 675 in file lab7.s
+   Uses
+      At line 650 in file lab7.s
+Comment: enemy_moveUp used once
+enemy_num 00000358
+
+Symbol: enemy_num
+   Definitions
+      At line 99 in file lab7.s
+   Uses
+      At line 35 in file lab7.s
+Comment: enemy_num used once
+enemy_position_check 000004A0
+
+Symbol: enemy_position_check
+   Definitions
+
+
+
+ARM Macro Assembler    Page 9 Alphabetic symbol ordering
+Relocatable symbols
+
+      At line 261 in file lab7.s
+   Uses
+      At line 216 in file lab7.s
+      At line 230 in file lab7.s
+      At line 242 in file lab7.s
+
+enemy_position_generator 00000418
+
+Symbol: enemy_position_generator
+   Definitions
+      At line 209 in file lab7.s
+   Uses
+      At line 46 in file lab7.s
+Comment: enemy_position_generator used once
+enemy_update_down 0000095C
+
+Symbol: enemy_update_down
+   Definitions
+      At line 728 in file lab7.s
+   Uses
+      None
+Comment: enemy_update_down unused
+enemy_update_left 000009B4
+
+Symbol: enemy_update_left
+   Definitions
+      At line 764 in file lab7.s
+   Uses
+      None
+Comment: enemy_update_left unused
+enemy_update_right 00000A0C
+
+Symbol: enemy_update_right
+   Definitions
+      At line 800 in file lab7.s
+   Uses
+      None
+Comment: enemy_update_right unused
+enemy_update_up 00000904
+
+Symbol: enemy_update_up
+   Definitions
+      At line 691 in file lab7.s
+   Uses
+      None
+Comment: enemy_update_up unused
+exit_desc 00000317
+
+Symbol: exit_desc
+   Definitions
+      At line 74 in file lab7.s
+   Uses
+      At line 196 in file lab7.s
+Comment: exit_desc used once
+finish_enemy_move 00000DAC
+
+Symbol: finish_enemy_move
+   Definitions
+      At line 1161 in file lab7.s
+
+
+
+ARM Macro Assembler    Page 10 Alphabetic symbol ordering
+Relocatable symbols
+
+   Uses
+      At line 1157 in file lab7.s
+Comment: finish_enemy_move used once
+game_over 0000035C
+
+Symbol: game_over
+   Definitions
+      At line 102 in file lab7.s
+   Uses
+      At line 38 in file lab7.s
+      At line 169 in file lab7.s
+      At line 183 in file lab7.s
+      At line 1154 in file lab7.s
+
+generator_Enemy_X1 0000044C
+
+Symbol: generator_Enemy_X1
+   Definitions
+      At line 227 in file lab7.s
+   Uses
+      At line 215 in file lab7.s
+Comment: generator_Enemy_X1 used once
+generator_Enemy_X2 00000478
+
+Symbol: generator_Enemy_X2
+   Definitions
+      At line 241 in file lab7.s
+   Uses
+      At line 229 in file lab7.s
+Comment: generator_Enemy_X2 used once
+insert_empty 00000560
+
+Symbol: insert_empty
+   Definitions
+      At line 331 in file lab7.s
+   Uses
+      At line 223 in file lab7.s
+      At line 237 in file lab7.s
+      At line 249 in file lab7.s
+
+instruction1 00000000
+
+Symbol: instruction1
+   Definitions
+      At line 72 in file lab7.s
+   Uses
+      At line 139 in file lab7.s
+Comment: instruction1 used once
+instruction2 0000004B
+
+Symbol: instruction2
+   Definitions
+      At line 73 in file lab7.s
+   Uses
+      At line 142 in file lab7.s
+Comment: instruction2 used once
+interrupts 00000000
+
+Symbol: interrupts
+
+
+
+ARM Macro Assembler    Page 11 Alphabetic symbol ordering
+Relocatable symbols
+
+   Definitions
+      At line 1 in file lab7.s
+   Uses
+      None
+Comment: interrupts unused
+lab7 0000037C
+
+Symbol: lab7
+   Definitions
+      At line 135 in file lab7.s
+   Uses
+      At line 2 in file lab7.s
+Comment: lab7 used once
+level 00000364
+
+Symbol: level
+   Definitions
+      At line 108 in file lab7.s
+   Uses
+      At line 39 in file lab7.s
+      At line 930 in file lab7.s
+      At line 1039 in file lab7.s
+
+loop 000003E4
+
+Symbol: loop
+   Definitions
+      At line 182 in file lab7.s
+   Uses
+      At line 186 in file lab7.s
+Comment: loop used once
+lose_life_enemy_down 00000974
+
+Symbol: lose_life_enemy_down
+   Definitions
+      At line 736 in file lab7.s
+   Uses
+      At line 720 in file lab7.s
+      At line 722 in file lab7.s
+      At line 724 in file lab7.s
+      At line 726 in file lab7.s
+
+lose_life_enemy_left 000009CC
+
+Symbol: lose_life_enemy_left
+   Definitions
+      At line 772 in file lab7.s
+   Uses
+      At line 756 in file lab7.s
+      At line 758 in file lab7.s
+      At line 760 in file lab7.s
+      At line 762 in file lab7.s
+
+lose_life_enemy_right 00000A24
+
+Symbol: lose_life_enemy_right
+   Definitions
+      At line 808 in file lab7.s
+   Uses
+
+
+
+ARM Macro Assembler    Page 12 Alphabetic symbol ordering
+Relocatable symbols
+
+      At line 792 in file lab7.s
+      At line 794 in file lab7.s
+      At line 796 in file lab7.s
+      At line 798 in file lab7.s
+
+lose_life_enemy_up 0000091C
+
+Symbol: lose_life_enemy_up
+   Definitions
+      At line 699 in file lab7.s
+   Uses
+      At line 683 in file lab7.s
+      At line 685 in file lab7.s
+      At line 687 in file lab7.s
+      At line 689 in file lab7.s
+
+mov_left 0000086C
+
+Symbol: mov_left
+   Definitions
+      At line 620 in file lab7.s
+   Uses
+      At line 598 in file lab7.s
+Comment: mov_left used once
+mov_right 00000874
+
+Symbol: mov_right
+   Definitions
+      At line 624 in file lab7.s
+   Uses
+      At line 607 in file lab7.s
+      At line 616 in file lab7.s
+
+moveDown_enemy 000008B0
+
+Symbol: moveDown_enemy
+   Definitions
+      At line 653 in file lab7.s
+   Uses
+      At line 643 in file lab7.s
+Comment: moveDown_enemy used once
+moveLeft_enemy 000008B8
+
+Symbol: moveLeft_enemy
+   Definitions
+      At line 657 in file lab7.s
+   Uses
+      At line 645 in file lab7.s
+Comment: moveLeft_enemy used once
+moveRight_enemy 000008C0
+
+Symbol: moveRight_enemy
+   Definitions
+      At line 661 in file lab7.s
+   Uses
+      At line 647 in file lab7.s
+Comment: moveRight_enemy used once
+moveUp_enemy 000008A8
+
+
+
+
+ARM Macro Assembler    Page 13 Alphabetic symbol ordering
+Relocatable symbols
+
+Symbol: moveUp_enemy
+   Definitions
+      At line 649 in file lab7.s
+   Uses
+      At line 641 in file lab7.s
+Comment: moveUp_enemy used once
+move_EnemyX1 00000CFC
+
+Symbol: move_EnemyX1
+   Definitions
+      At line 1100 in file lab7.s
+   Uses
+      At line 1094 in file lab7.s
+Comment: move_EnemyX1 used once
+move_EnemyX2 00000D50
+
+Symbol: move_EnemyX2
+   Definitions
+      At line 1128 in file lab7.s
+   Uses
+      At line 1105 in file lab7.s
+      At line 1122 in file lab7.s
+
+move_down_UART 00000BA0
+
+Symbol: move_down_UART
+   Definitions
+      At line 968 in file lab7.s
+   Uses
+      At line 889 in file lab7.s
+Comment: move_down_UART used once
+move_left_UART 00000BA8
+
+Symbol: move_left_UART
+   Definitions
+      At line 972 in file lab7.s
+   Uses
+      At line 891 in file lab7.s
+Comment: move_left_UART used once
+move_right_UART 00000BB0
+
+Symbol: move_right_UART
+   Definitions
+      At line 976 in file lab7.s
+   Uses
+      At line 893 in file lab7.s
+Comment: move_right_UART used once
+move_up_UART 00000B98
+
+Symbol: move_up_UART
+   Definitions
+      At line 964 in file lab7.s
+   Uses
+      At line 887 in file lab7.s
+Comment: move_up_UART used once
+new_level_flag 00000360
+
+Symbol: new_level_flag
+   Definitions
+
+
+
+ARM Macro Assembler    Page 14 Alphabetic symbol ordering
+Relocatable symbols
+
+      At line 105 in file lab7.s
+   Uses
+      At line 37 in file lab7.s
+      At line 922 in file lab7.s
+      At line 1031 in file lab7.s
+
+pause_now 00000BF0
+
+Symbol: pause_now
+   Definitions
+      At line 1005 in file lab7.s
+   Uses
+      At line 995 in file lab7.s
+Comment: pause_now used once
+pause_state 0000033C
+
+Symbol: pause_state
+   Definitions
+      At line 82 in file lab7.s
+   Uses
+      At line 42 in file lab7.s
+      At line 164 in file lab7.s
+      At line 869 in file lab7.s
+      At line 992 in file lab7.s
+      At line 1022 in file lab7.s
+      At line 1177 in file lab7.s
+
+player_lives 0000036C
+
+Symbol: player_lives
+   Definitions
+      At line 114 in file lab7.s
+   Uses
+      At line 36 in file lab7.s
+      At line 938 in file lab7.s
+
+player_movement 00000374
+
+Symbol: player_movement
+   Definitions
+      At line 120 in file lab7.s
+   Uses
+      At line 878 in file lab7.s
+      At line 918 in file lab7.s
+      At line 1028 in file lab7.s
+
+player_pose 00000378
+
+Symbol: player_pose
+   Definitions
+      At line 123 in file lab7.s
+   Uses
+      At line 34 in file lab7.s
+Comment: player_pose used once
+point 00000354
+
+Symbol: point
+   Definitions
+      At line 96 in file lab7.s
+
+
+
+ARM Macro Assembler    Page 15 Alphabetic symbol ordering
+Relocatable symbols
+
+   Uses
+      At line 21 in file lab7.s
+      At line 174 in file lab7.s
+      At line 908 in file lab7.s
+
+random_again 000004D0
+
+Symbol: random_again
+   Definitions
+      At line 279 in file lab7.s
+   Uses
+      At line 269 in file lab7.s
+      At line 271 in file lab7.s
+      At line 273 in file lab7.s
+      At line 275 in file lab7.s
+      At line 288 in file lab7.s
+      At line 295 in file lab7.s
+      At line 302 in file lab7.s
+      At line 304 in file lab7.s
+      At line 306 in file lab7.s
+      At line 308 in file lab7.s
+      At line 315 in file lab7.s
+      At line 317 in file lab7.s
+      At line 319 in file lab7.s
+      At line 321 in file lab7.s
+
+random_dir_two 000007B4
+
+Symbol: random_dir_two
+   Definitions
+      At line 545 in file lab7.s
+   Uses
+      At line 572 in file lab7.s
+      At line 578 in file lab7.s
+      At line 587 in file lab7.s
+      At line 596 in file lab7.s
+      At line 605 in file lab7.s
+      At line 614 in file lab7.s
+
+random_pick_two 000006D8
+
+Symbol: random_pick_two
+   Definitions
+      At line 460 in file lab7.s
+   Uses
+      At line 395 in file lab7.s
+      At line 415 in file lab7.s
+      At line 435 in file lab7.s
+      At line 455 in file lab7.s
+
+restart 000003A8
+
+Symbol: restart
+   Definitions
+      At line 156 in file lab7.s
+   Uses
+      At line 44 in file lab7.s
+      At line 187 in file lab7.s
+
+
+
+
+ARM Macro Assembler    Page 16 Alphabetic symbol ordering
+Relocatable symbols
+
+return_dir 000006E0
+
+Symbol: return_dir
+   Definitions
+      At line 464 in file lab7.s
+   Uses
+      At line 386 in file lab7.s
+      At line 393 in file lab7.s
+      At line 399 in file lab7.s
+      At line 401 in file lab7.s
+      At line 406 in file lab7.s
+      At line 413 in file lab7.s
+      At line 419 in file lab7.s
+      At line 421 in file lab7.s
+      At line 426 in file lab7.s
+      At line 433 in file lab7.s
+      At line 439 in file lab7.s
+      At line 441 in file lab7.s
+      At line 446 in file lab7.s
+      At line 453 in file lab7.s
+      At line 458 in file lab7.s
+      At line 462 in file lab7.s
+
+shot_air_pump 00000B84
+
+Symbol: shot_air_pump
+   Definitions
+      At line 956 in file lab7.s
+   Uses
+      At line 876 in file lab7.s
+Comment: shot_air_pump used once
+skip_move_slow_enemy 00000D8C
+
+Symbol: skip_move_slow_enemy
+   Definitions
+      At line 1148 in file lab7.s
+   Uses
+      At line 1086 in file lab7.s
+Comment: skip_move_slow_enemy used once
+slow_enemy_flag 00000368
+
+Symbol: slow_enemy_flag
+   Definitions
+      At line 111 in file lab7.s
+   Uses
+      At line 40 in file lab7.s
+      At line 926 in file lab7.s
+      At line 1083 in file lab7.s
+
+start_game 00000AFC
+
+Symbol: start_game
+   Definitions
+      At line 897 in file lab7.s
+   Uses
+      At line 862 in file lab7.s
+Comment: start_game used once
+start_place 000004A4
+
+
+
+
+ARM Macro Assembler    Page 17 Alphabetic symbol ordering
+Relocatable symbols
+
+Symbol: start_place
+   Definitions
+      At line 264 in file lab7.s
+   Uses
+      At line 281 in file lab7.s
+Comment: start_place used once
+start_state 00000338
+
+Symbol: start_state
+   Definitions
+      At line 78 in file lab7.s
+   Uses
+      At line 41 in file lab7.s
+      At line 159 in file lab7.s
+      At line 864 in file lab7.s
+      At line 898 in file lab7.s
+      At line 987 in file lab7.s
+      At line 1017 in file lab7.s
+      At line 1172 in file lab7.s
+
+store_done 0000059C
+
+Symbol: store_done
+   Definitions
+      At line 352 in file lab7.s
+   Uses
+      At line 348 in file lab7.s
+Comment: store_done used once
+store_right 00000584
+
+Symbol: store_right
+   Definitions
+      At line 344 in file lab7.s
+   Uses
+      At line 340 in file lab7.s
+Comment: store_right used once
+time_value 00000370
+
+Symbol: time_value
+   Definitions
+      At line 117 in file lab7.s
+   Uses
+      At line 43 in file lab7.s
+      At line 179 in file lab7.s
+      At line 913 in file lab7.s
+
+106 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Absolute symbols
+
+CENTER 000000F1
+
+Symbol: CENTER
+   Definitions
+      At line 132 in file lab7.s
+   Uses
+      None
+Comment: CENTER unused
+T0MR0 E0004018
+
+Symbol: T0MR0
+   Definitions
+      At line 126 in file lab7.s
+   Uses
+      At line 1047 in file lab7.s
+Comment: T0MR0 used once
+T0TC E0004008
+
+Symbol: T0TC
+   Definitions
+      At line 127 in file lab7.s
+   Uses
+      None
+Comment: T0TC unused
+3 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+External symbols
+
+IO0CLR 00000000
+
+Symbol: IO0CLR
+   Definitions
+      At line 9 in file lab7.s
+   Uses
+      At line 191 in file lab7.s
+Comment: IO0CLR used once
+Illuminate_RGB_LED 00000000
+
+Symbol: Illuminate_RGB_LED
+   Definitions
+      At line 24 in file lab7.s
+   Uses
+      At line 151 in file lab7.s
+      At line 946 in file lab7.s
+      At line 958 in file lab7.s
+      At line 1002 in file lab7.s
+      At line 1011 in file lab7.s
+      At line 1183 in file lab7.s
+
+Period_SET 00000000
+
+Symbol: Period_SET
+   Definitions
+      At line 25 in file lab7.s
+   Uses
+      At line 1044 in file lab7.s
+Comment: Period_SET used once
+T1TC 00000000
+
+Symbol: T1TC
+   Definitions
+      At line 68 in file lab7.s
+   Uses
+      At line 549 in file lab7.s
+Comment: T1TC used once
+air_pump 00000000
+
+Symbol: air_pump
+   Definitions
+      At line 28 in file lab7.s
+   Uses
+      At line 960 in file lab7.s
+Comment: air_pump used once
+air_pump_clear 00000000
+
+Symbol: air_pump_clear
+   Definitions
+      At line 29 in file lab7.s
+   Uses
+      At line 961 in file lab7.s
+Comment: air_pump_clear used once
+board 00000000
+
+Symbol: board
+   Definitions
+      At line 10 in file lab7.s
+   Uses
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+External symbols
+
+      At line 266 in file lab7.s
+      At line 285 in file lab7.s
+      At line 292 in file lab7.s
+      At line 299 in file lab7.s
+      At line 312 in file lab7.s
+      At line 334 in file lab7.s
+      At line 368 in file lab7.s
+      At line 680 in file lab7.s
+      At line 717 in file lab7.s
+      At line 753 in file lab7.s
+      At line 789 in file lab7.s
+      At line 951 in file lab7.s
+      At line 1159 in file lab7.s
+
+display_digit_on_7_seg 00000000
+
+Symbol: display_digit_on_7_seg
+   Definitions
+      At line 8 in file lab7.s
+   Uses
+      At line 147 in file lab7.s
+      At line 935 in file lab7.s
+
+div_and_mod 00000000
+
+Symbol: div_and_mod
+   Definitions
+      At line 69 in file lab7.s
+   Uses
+      At line 556 in file lab7.s
+Comment: div_and_mod used once
+enemyB_curPos 00000000
+
+Symbol: enemyB_curPos
+   Definitions
+      At line 63 in file lab7.s
+   Uses
+      At line 219 in file lab7.s
+      At line 1070 in file lab7.s
+
+enemyB_dir 00000000
+
+Symbol: enemyB_dir
+   Definitions
+      At line 55 in file lab7.s
+   Uses
+      At line 1072 in file lab7.s
+      At line 1076 in file lab7.s
+
+enemyB_live 00000000
+
+Symbol: enemyB_live
+   Definitions
+      At line 60 in file lab7.s
+   Uses
+      At line 1063 in file lab7.s
+Comment: enemyB_live used once
+enemyB_pos 00000000
+
+
+
+
+ARM Macro Assembler    Page 3 Alphabetic symbol ordering
+External symbols
+
+Symbol: enemyB_pos
+   Definitions
+      At line 52 in file lab7.s
+   Uses
+      At line 217 in file lab7.s
+Comment: enemyB_pos used once
+enemyB_type 00000000
+
+Symbol: enemyB_type
+   Definitions
+      At line 58 in file lab7.s
+   Uses
+      At line 221 in file lab7.s
+      At line 1068 in file lab7.s
+
+enemyMove_flag 00000000
+
+Symbol: enemyMove_flag
+   Definitions
+      At line 66 in file lab7.s
+   Uses
+      At line 1051 in file lab7.s
+      At line 1091 in file lab7.s
+      At line 1119 in file lab7.s
+
+enemyX1_curPos 00000000
+
+Symbol: enemyX1_curPos
+   Definitions
+      At line 64 in file lab7.s
+   Uses
+      At line 233 in file lab7.s
+      At line 1109 in file lab7.s
+
+enemyX1_dir 00000000
+
+Symbol: enemyX1_dir
+   Definitions
+      At line 53 in file lab7.s
+   Uses
+      At line 1111 in file lab7.s
+      At line 1115 in file lab7.s
+      At line 1139 in file lab7.s
+
+enemyX1_live 00000000
+
+Symbol: enemyX1_live
+   Definitions
+      At line 61 in file lab7.s
+   Uses
+      At line 1102 in file lab7.s
+Comment: enemyX1_live used once
+enemyX1_pos 00000000
+
+Symbol: enemyX1_pos
+   Definitions
+      At line 50 in file lab7.s
+   Uses
+      At line 231 in file lab7.s
+
+
+
+ARM Macro Assembler    Page 4 Alphabetic symbol ordering
+External symbols
+
+Comment: enemyX1_pos used once
+enemyX1_type 00000000
+
+Symbol: enemyX1_type
+   Definitions
+      At line 56 in file lab7.s
+   Uses
+      At line 235 in file lab7.s
+      At line 1107 in file lab7.s
+
+enemyX2_curPos 00000000
+
+Symbol: enemyX2_curPos
+   Definitions
+      At line 65 in file lab7.s
+   Uses
+      At line 245 in file lab7.s
+      At line 1137 in file lab7.s
+
+enemyX2_dir 00000000
+
+Symbol: enemyX2_dir
+   Definitions
+      At line 54 in file lab7.s
+   Uses
+      At line 1143 in file lab7.s
+Comment: enemyX2_dir used once
+enemyX2_live 00000000
+
+Symbol: enemyX2_live
+   Definitions
+      At line 62 in file lab7.s
+   Uses
+      At line 1130 in file lab7.s
+Comment: enemyX2_live used once
+enemyX2_pos 00000000
+
+Symbol: enemyX2_pos
+   Definitions
+      At line 51 in file lab7.s
+   Uses
+      At line 243 in file lab7.s
+Comment: enemyX2_pos used once
+enemyX2_type 00000000
+
+Symbol: enemyX2_type
+   Definitions
+      At line 57 in file lab7.s
+   Uses
+      At line 247 in file lab7.s
+      At line 1135 in file lab7.s
+
+enemy_Identity 00000000
+
+Symbol: enemy_Identity
+   Definitions
+      At line 59 in file lab7.s
+   Uses
+      None
+
+
+
+ARM Macro Assembler    Page 5 Alphabetic symbol ordering
+External symbols
+
+Comment: enemy_Identity unused
+enemy_dir 00000000
+
+Symbol: enemy_dir
+   Definitions
+      At line 49 in file lab7.s
+   Uses
+      None
+Comment: enemy_dir unused
+enemy_type 00000000
+
+Symbol: enemy_type
+   Definitions
+      At line 48 in file lab7.s
+   Uses
+      None
+Comment: enemy_type unused
+illuminateLiveLEDs 00000000
+
+Symbol: illuminateLiveLEDs
+   Definitions
+      At line 26 in file lab7.s
+   Uses
+      At line 154 in file lab7.s
+      At line 942 in file lab7.s
+
+initial_enemy 00000000
+
+Symbol: initial_enemy
+   Definitions
+      At line 32 in file lab7.s
+   Uses
+      At line 949 in file lab7.s
+Comment: initial_enemy used once
+initial_player 00000000
+
+Symbol: initial_player
+   Definitions
+      At line 23 in file lab7.s
+   Uses
+      At line 948 in file lab7.s
+Comment: initial_player used once
+invalidInput 00000000
+
+Symbol: invalidInput
+   Definitions
+      At line 7 in file lab7.s
+   Uses
+      None
+Comment: invalidInput unused
+lose_life 00000000
+
+Symbol: lose_life
+   Definitions
+      At line 31 in file lab7.s
+   Uses
+      At line 700 in file lab7.s
+      At line 737 in file lab7.s
+      At line 773 in file lab7.s
+
+
+
+ARM Macro Assembler    Page 6 Alphabetic symbol ordering
+External symbols
+
+      At line 809 in file lab7.s
+
+move_down 00000000
+
+Symbol: move_down
+   Definitions
+      At line 14 in file lab7.s
+   Uses
+      At line 969 in file lab7.s
+Comment: move_down used once
+move_left 00000000
+
+Symbol: move_left
+   Definitions
+      At line 15 in file lab7.s
+   Uses
+      At line 973 in file lab7.s
+Comment: move_left used once
+move_right 00000000
+
+Symbol: move_right
+   Definitions
+      At line 16 in file lab7.s
+   Uses
+      At line 977 in file lab7.s
+Comment: move_right used once
+move_up 00000000
+
+Symbol: move_up
+   Definitions
+      At line 13 in file lab7.s
+   Uses
+      At line 965 in file lab7.s
+Comment: move_up used once
+new_board 00000000
+
+Symbol: new_board
+   Definitions
+      At line 27 in file lab7.s
+   Uses
+      None
+Comment: new_board unused
+output_character 00000000
+
+Symbol: output_character
+   Definitions
+      At line 5 in file lab7.s
+   Uses
+      None
+Comment: output_character unused
+output_string 00000000
+
+Symbol: output_string
+   Definitions
+      At line 6 in file lab7.s
+   Uses
+      At line 140 in file lab7.s
+      At line 143 in file lab7.s
+      At line 197 in file lab7.s
+
+
+
+ARM Macro Assembler    Page 7 Alphabetic symbol ordering
+External symbols
+
+      At line 952 in file lab7.s
+      At line 1160 in file lab7.s
+
+random_dir 00000000
+
+Symbol: random_dir
+   Definitions
+      At line 12 in file lab7.s
+   Uses
+      At line 397 in file lab7.s
+      At line 417 in file lab7.s
+      At line 437 in file lab7.s
+      At line 457 in file lab7.s
+
+random_position 00000000
+
+Symbol: random_position
+   Definitions
+      At line 11 in file lab7.s
+   Uses
+      At line 212 in file lab7.s
+      At line 280 in file lab7.s
+
+read_character 00000000
+
+Symbol: read_character
+   Definitions
+      At line 4 in file lab7.s
+   Uses
+      At line 856 in file lab7.s
+Comment: read_character used once
+update_time 00000000
+
+Symbol: update_time
+   Definitions
+      At line 30 in file lab7.s
+   Uses
+      At line 1185 in file lab7.s
+Comment: update_time used once
+44 symbols
+487 symbols in table
